@@ -1,16 +1,13 @@
 package enclave.encare.encare.controller;
 
+import enclave.encare.encare.form.FreeTimeForm;
 import enclave.encare.encare.form.LoginForm;
 import enclave.encare.encare.form.RegisterFormDoctor;
 import enclave.encare.encare.form.RegisterFormUser;
 import enclave.encare.encare.jwt.JwtTokenProvider;
 import enclave.encare.encare.model.Account;
-import enclave.encare.encare.model.Doctor;
 import enclave.encare.encare.model.ResponseObject;
-import enclave.encare.encare.model.User;
-import enclave.encare.encare.service.CategoryService;
-import enclave.encare.encare.service.DoctorService;
-import enclave.encare.encare.service.UserService;
+import enclave.encare.encare.service.*;
 import enclave.encare.encare.until.CustomUserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,6 +34,12 @@ public class HomeController {
 
     @Autowired
     DoctorService doctorService;
+
+    @Autowired
+    HospitalService hospitalService;
+
+    @Autowired
+    AppointmentService appointmentService;
 
     @PostMapping("/login")
     public ResponseEntity<ResponseObject> login(@RequestBody LoginForm loginForm){
@@ -86,10 +89,21 @@ public class HomeController {
         );
     }
 
-    @GetMapping("/listDoctor/categoryId={categoryId}")
-    public ResponseEntity<ResponseObject> listDoctorOfCategoryId(@PathVariable("categoryId") long categoryId){
+    @GetMapping("/listDoctor")
+    public ResponseEntity<ResponseObject> listDoctorOfCategoryIdAndRating(
+            @RequestParam(required = true, name = "categoryId") long categoryId,
+            @RequestParam(required = false, name = "page", defaultValue = "0") int page,
+            @RequestParam(required = false, name = "rating", defaultValue = "0") int rating){
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200, "List Category", doctorService.listDoctorOfCategory(categoryId))
+                new ResponseObject(200, "List Category", doctorService.listDoctorOfCategoryRating(categoryId, page, rating))
+        );
+    }
+
+
+    @PostMapping("/listFreeTime")
+    public ResponseEntity<ResponseObject> listFreeTimeOfDoctor(@RequestBody FreeTimeForm freeTimeForm){
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(200, "Thời gian rảnh", appointmentService.listFreeTime(freeTimeForm))
         );
     }
 }

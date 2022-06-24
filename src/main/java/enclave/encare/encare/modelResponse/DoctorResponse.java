@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class DoctorResponse {
     private long doctorId;
-    private long rating;
+    private float rating;
     private long countRating;
 
     private AccountResponse accountResponse;

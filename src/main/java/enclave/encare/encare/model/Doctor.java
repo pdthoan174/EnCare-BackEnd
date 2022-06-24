@@ -18,7 +18,7 @@ public class Doctor implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long doctorId;
-    private long rating;
+    private float rating;
     private long countRating;
 
     @OneToOne

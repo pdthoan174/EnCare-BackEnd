@@ -19,9 +19,10 @@ public class Appointment {
     private long appointmentId;
     private String symptoms;
     private String description;
+    private int time;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date time;
+    private Date day;
     @Temporal(TemporalType.TIMESTAMP)
     private Date createDate;
 

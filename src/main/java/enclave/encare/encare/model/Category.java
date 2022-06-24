@@ -27,4 +27,8 @@ public class Category {
     public Category(long categoryId){
         this.categoryId = categoryId;
     }
+    public Category(String name, String description){
+        this.name = name;
+        this.description = description;
+    }
 }

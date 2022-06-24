@@ -53,9 +53,7 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
             account.setPassword(passwordEncoder.encode(registerFormUser.getPassword()));
             account.setRole("USER");
             account.setName(registerFormUser.getName());
-            account.setBirthday(TimeConfig.getDate(registerFormUser.getBirthDay()));
             account.setCreateDate(new Date());
-            account.setDescription(registerFormUser.getDescription());
 
             return accountRepository.save(account).getAccountId();
         }

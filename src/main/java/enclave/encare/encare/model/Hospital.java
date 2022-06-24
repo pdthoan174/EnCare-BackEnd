@@ -32,4 +32,14 @@ public class Hospital {
     public Hospital(long hospitalId){
         this.hospitalId = hospitalId;
     }
+
+    public Hospital(String description, long latMap, long longMap, long rating, long countRating, String address, String name) {
+        this.description = description;
+        this.latMap = latMap;
+        this.longMap = longMap;
+        this.rating = rating;
+        this.countRating = countRating;
+        this.address = address;
+        this.name = name;
+    }
 }

@@ -1,17 +1,18 @@
 package enclave.encare.encare.service.impl;
 
+import enclave.encare.encare.config.NumberConfig;
 import enclave.encare.encare.form.RegisterFormDoctor;
 import enclave.encare.encare.model.Account;
 import enclave.encare.encare.model.Category;
 import enclave.encare.encare.model.Doctor;
 import enclave.encare.encare.model.Hospital;
 import enclave.encare.encare.modelResponse.DoctorResponse;
+import enclave.encare.encare.repository.AppointmentRepository;
 import enclave.encare.encare.repository.DoctorRepository;
-import enclave.encare.encare.service.AccountService;
-import enclave.encare.encare.service.CategoryService;
-import enclave.encare.encare.service.DoctorService;
-import enclave.encare.encare.service.HospitalService;
+import enclave.encare.encare.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,6 +25,9 @@ public class DoctorServiceImpl implements DoctorService {
     DoctorRepository doctorRepository;
 
     @Autowired
+    AppointmentRepository appointmentRepository;
+
+    @Autowired
     AccountService accountService;
 
     @Autowired
@@ -31,8 +35,6 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Autowired
     HospitalService hospitalService;
-
-
 
     @Override
     public DoctorResponse findById(long id) {
@@ -61,15 +63,27 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public List<DoctorResponse> listDoctorOfCategory(long categoryId) {
-        Category category = new Category(categoryId);
-        List<Doctor> doctorList = doctorRepository.findDoctorByCategory(category);
+    public List<DoctorResponse> listDoctorOfCategoryRating(long categoryId, int page, float rating) {
+        Pageable pageable = PageRequest.of(page, 6);
+        List<Doctor> doctorList = doctorRepository.findDoctorByCategoryAndRatingDesc(categoryId, rating, pageable);
         List<DoctorResponse> doctorResponseList = new ArrayList<DoctorResponse>();
         for (Doctor doctor:doctorList){
             DoctorResponse doctorResponse = transformData(doctor);
             doctorResponseList.add(doctorResponse);
         }
         return doctorResponseList;
+    }
+
+    @Override
+    public void updateRating(long appointmentId, int number) {
+        Doctor doctor = appointmentRepository.findDoctorByAppointmentId(appointmentId);
+        long count = doctor.getCountRating();
+        float rating = doctor.getRating();
+        float value = (count*rating+number)/(count+1);
+        doctor.setRating(NumberConfig.round(value));
+        doctor.setCountRating(count+1);
+
+        doctorRepository.save(doctor);
     }
 
     private DoctorResponse transformData(Doctor doctor){
