@@ -28,4 +28,8 @@ public class Hospital {
     @OneToMany(mappedBy = "hospital")
     @Cascade(value = org.hibernate.annotations.CascadeType.REMOVE)
     private List<Doctor> doctorList;
+
+    public Hospital(long hospitalId){
+        this.hospitalId = hospitalId;
+    }
 }

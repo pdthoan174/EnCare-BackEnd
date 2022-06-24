@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Data
@@ -13,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long userId;
@@ -33,4 +34,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     @Cascade(org.hibernate.annotations.CascadeType.REMOVE)
     private List<Channel> channelIdList;
+
+    public User(long userId){
+        this.userId = userId;
+    }
 }
