@@ -39,4 +39,8 @@ public class Appointment {
 
     @OneToOne(mappedBy = "appointment")
     private Feedback feedback;
+
+    public Appointment(long appointmentId){
+        this.appointmentId = appointmentId;
+    }
 }

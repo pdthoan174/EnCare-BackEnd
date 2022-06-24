@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "account")
-public class Account {
+public class Account implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long accountId;
@@ -39,4 +40,8 @@ public class Account {
     @OneToMany(mappedBy = "account")
     @Cascade(org.hibernate.annotations.CascadeType.REMOVE)
     private List<Message> messageList;
+
+    public Account(long accountId){
+        this.accountId = accountId;
+    }
 }

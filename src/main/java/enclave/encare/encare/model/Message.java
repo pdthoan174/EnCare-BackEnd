@@ -24,4 +24,8 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "accountId")
     private Account account;
+
+    public Message(long messageId){
+        this.messageId = messageId;
+    }
 }

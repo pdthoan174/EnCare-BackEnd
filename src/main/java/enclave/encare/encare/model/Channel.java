@@ -30,5 +30,7 @@ public class Channel {
     @Cascade(org.hibernate.annotations.CascadeType.REMOVE)
     private List<Message> messageList;
 
-
+    public Channel(long channelId){
+        this.channelId = channelId;
+    }
 }

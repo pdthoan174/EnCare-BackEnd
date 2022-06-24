@@ -23,4 +23,8 @@ public class Status {
     @OneToMany(mappedBy = "status")
     @Cascade(org.hibernate.annotations.CascadeType.REMOVE)
     private List<Appointment> appointmentList;
+
+    public Status(long statusId){
+        this.statusId = statusId;
+    }
 }
