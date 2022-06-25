@@ -11,9 +11,10 @@ import enclave.encare.encare.service.DoctorService;
 import enclave.encare.encare.service.StatusService;
 import enclave.encare.encare.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -66,9 +67,10 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<AppointmentResponse> historyAppointmentUser(long userId) {
+    public List<AppointmentResponse> historyAppointmentUser(long userId, int page) {
         User user = new User(userId);
-        List<Appointment> appointmentList = appointmentRepository.findByUser(user);
+        Pageable pageable = PageRequest.of(page, 6);
+        List<Appointment> appointmentList = appointmentRepository.findByUser(user, pageable);
         List<AppointmentResponse> appointmentResponseList = new ArrayList<AppointmentResponse>();
         for (Appointment appointment:appointmentList){
             AppointmentResponse appointmentResponse = transformData(appointment);
@@ -110,6 +112,19 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
 
         return list;
+    }
+
+    @Override
+    public boolean cancelAppointment(long userId, long appointmentId) {
+        User user = new User(userId);
+        Appointment appointment = appointmentRepository.findByAppointmentIdAndUser(appointmentId, user);
+        if (appointment == null){
+            return false;
+        }
+        Status status = new Status(4);
+        appointment.setStatus(status);
+        appointmentRepository.save(appointment);
+        return true;
     }
 
     public boolean findTimeAndDay(long doctorId, int time, Date date){

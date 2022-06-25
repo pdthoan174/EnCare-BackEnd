@@ -78,10 +78,22 @@ public class UserController {
     }
 
     @GetMapping("/history")
-    public ResponseEntity<ResponseObject> historyAppointment(){
+    public ResponseEntity<ResponseObject> historyAppointment(@RequestParam(required = false, name = "page", defaultValue = "0") int page){
         long userId = getUserId();
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200,"Lịch sử khám bệnh", appointmentService.historyAppointmentUser(userId))
+                new ResponseObject(200,"Lịch sử khám bệnh", appointmentService.historyAppointmentUser(userId, page))
+        );
+    }
+
+    @GetMapping("/cancel")
+    public ResponseEntity<ResponseObject> cancelAppointment(@RequestParam(required = true, name = "appointmentId") long appoinmentId){
+        if (appointmentService.cancelAppointment(getUserId(), appoinmentId)){
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(200, "Đã hủy lịch hẹn", "")
+            );
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ResponseObject(400, "Hủy không thành công", "Không tồn tại lịch khám này")
         );
     }
 

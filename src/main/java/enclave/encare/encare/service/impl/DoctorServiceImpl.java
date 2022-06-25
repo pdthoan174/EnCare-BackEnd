@@ -38,7 +38,11 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public DoctorResponse findById(long id) {
-        return transformData(doctorRepository.findByDoctorId(id));
+        Doctor doctor = doctorRepository.findByDoctorId(id);
+        if (doctor == null){
+            return null;
+        }
+        return transformData(doctor);
     }
 
     @Override
@@ -84,6 +88,18 @@ public class DoctorServiceImpl implements DoctorService {
         doctor.setCountRating(count+1);
 
         doctorRepository.save(doctor);
+    }
+
+    @Override
+    public List<DoctorResponse> findLikeName(String name, int page) {
+        Pageable pageable = PageRequest.of(page, 6);
+        List<Doctor> doctorList = doctorRepository.findDoctorByName(name, pageable);
+        List<DoctorResponse> doctorResponseList = new ArrayList<DoctorResponse>();
+        for (Doctor doctor:doctorList){
+            DoctorResponse doctorResponse = transformData(doctor);
+            doctorResponseList.add(doctorResponse);
+        }
+        return doctorResponseList;
     }
 
     private DoctorResponse transformData(Doctor doctor){

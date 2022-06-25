@@ -17,7 +17,11 @@ public class HospitalServiceImpl implements HospitalService {
 
     @Override
     public HospitalResponse findById(long id) {
-        return transformData(hospitalRepository.findByHospitalId(id));
+        Hospital hospital = hospitalRepository.findByHospitalId(id);
+        if (hospital==null){
+            return null;
+        }
+        return transformData(hospital);
     }
 
     private HospitalResponse transformData(Hospital hospital){
