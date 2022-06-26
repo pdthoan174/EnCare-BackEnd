@@ -1,15 +1,13 @@
 package enclave.encare.encare.controller;
 
-import enclave.encare.encare.form.FreeTimeForm;
-import enclave.encare.encare.form.LoginForm;
-import enclave.encare.encare.form.RegisterFormDoctor;
-import enclave.encare.encare.form.RegisterFormUser;
+import enclave.encare.encare.form.*;
 import enclave.encare.encare.jwt.JwtTokenProvider;
 import enclave.encare.encare.model.Account;
 import enclave.encare.encare.model.ResponseObject;
 import enclave.encare.encare.service.*;
 import enclave.encare.encare.until.CustomUserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -104,6 +102,16 @@ public class HomeController {
     public ResponseEntity<ResponseObject> listFreeTimeOfDoctor(@RequestBody FreeTimeForm freeTimeForm){
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(200, "Thời gian rảnh", appointmentService.listFreeTime(freeTimeForm))
+        );
+    }
+
+
+    @PostMapping("/uploadImage")
+    public ResponseEntity<ResponseObject> uploadImage(@ModelAttribute("imageForm") ImageForm imageForm){
+//        String link ="https://"+bucketName+".s3."+region+".amazonaws.com/"+storageService.uploadFile(imageForm.getFile());
+//        System.out.println(link);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(200, "upload success", "")
         );
     }
 }

@@ -4,12 +4,12 @@ import enclave.encare.encare.config.TimeConfig;
 import enclave.encare.encare.form.AppointmentForm;
 import enclave.encare.encare.form.FreeTimeForm;
 import enclave.encare.encare.model.*;
+import enclave.encare.encare.modelResponse.AccountResponse;
 import enclave.encare.encare.modelResponse.AppointmentResponse;
+import enclave.encare.encare.modelResponse.DoctorResponse;
+import enclave.encare.encare.modelResponse.UserResponse;
 import enclave.encare.encare.repository.AppointmentRepository;
-import enclave.encare.encare.service.AppointmentService;
-import enclave.encare.encare.service.DoctorService;
-import enclave.encare.encare.service.StatusService;
-import enclave.encare.encare.service.UserService;
+import enclave.encare.encare.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,8 +45,12 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         Date day = TimeConfig.getDate(appointmentForm.getDay());
         int time = appointmentForm.getTime();
+        long userId = userService.findUserIdByAccountId(appointmentForm.getAccountUserId());
+        System.out.println(userId);
+
+        System.out.println("information of account doctor and user");
         if (findTimeAndDay(appointmentForm.getDoctorId(), time, day)){
-            User user = new User(appointmentForm.getUserId());
+            User user = new User(userId);
             Doctor doctor = new Doctor(appointmentForm.getDoctorId());
             Status status = new Status(1); // Đang chờ xác nhận
 
@@ -67,7 +71,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<AppointmentResponse> historyAppointmentUser(long userId, int page) {
+    public List<AppointmentResponse> historyAppointmentUser(long accountId, int page) {
+        long userId = userService.findUserIdByAccountId(accountId);
         User user = new User(userId);
         Pageable pageable = PageRequest.of(page, 6);
         List<Appointment> appointmentList = appointmentRepository.findByUser(user, pageable);
@@ -115,7 +120,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public boolean cancelAppointment(long userId, long appointmentId) {
+    public boolean cancelAppointment(long accountId, long appointmentId) {
+        long userId = userService.findUserIdByAccountId(accountId);
         User user = new User(userId);
         Appointment appointment = appointmentRepository.findByAppointmentIdAndUser(appointmentId, user);
         if (appointment == null){
@@ -128,6 +134,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     public boolean findTimeAndDay(long doctorId, int time, Date date){
+        System.out.println("check time");
 //        Appointment appointment = appointmentRepository.findByTimeAndDay(time, date);
         Doctor doctor = new Doctor(doctorId);
         List<Appointment> appointment = appointmentRepository.findByDoctorAndTimeAndDayEquals(doctor, time, date);

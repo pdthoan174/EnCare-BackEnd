@@ -1,5 +1,6 @@
 package enclave.encare.encare.repository;
 
+import enclave.encare.encare.model.Account;
 import enclave.encare.encare.model.Category;
 import enclave.encare.encare.model.Doctor;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,9 @@ import java.util.List;
 
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     Doctor findByDoctorId(long id);
+    Doctor findByAccount(Account account);
+    @Query("select d from Doctor d where d.account.accountId = ?1")
+    Doctor findDoctorByAccountId(long accountId);
     @Query("select d from Doctor d where d.category.categoryId = ?1 and d.rating >= ?2 order by d.rating desc ")
     List<Doctor> findDoctorByCategoryAndRatingDesc(long categoryId, float rating, Pageable pageable);
     @Query("select d from Doctor d where d.account.name like %?1% order by d.rating desc ")

@@ -1,2 +1,23 @@
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAXXTFF2PMREK7FGTT
+      secret-key: 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
+    region:
+      static: ap-southeast-1
+    stack:
+      auto: false
+
 application:
-  security-key: encare
+  bucket:
+    name: encare
+  security:
+    secret-key: encare
+
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2MB
+      max-file-size: 5MB
+      max-request-size: 10MB

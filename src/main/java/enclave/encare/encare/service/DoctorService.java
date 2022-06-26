@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface DoctorService {
     DoctorResponse findById(long id);
+    long findDoctorIdByAccountId(long accountId);
     boolean register(RegisterFormDoctor registerFormDoctor);
     List<DoctorResponse> listDoctorOfCategoryRating(long categoryId, int page, float rating);
     void updateRating(long appointmentId, int number);

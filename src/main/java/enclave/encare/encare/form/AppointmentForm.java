@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppointmentForm {
-    private long userId;
+    private long accountUserId;
     private long doctorId;
     private int time;
     private String day;

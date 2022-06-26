@@ -1,17 +1,33 @@
 package enclave.encare.encare.service.impl;
 
+import enclave.encare.encare.form.ImageForm;
 import enclave.encare.encare.form.RegisterFormUser;
 import enclave.encare.encare.model.Account;
 import enclave.encare.encare.model.User;
 import enclave.encare.encare.modelResponse.UserResponse;
+import enclave.encare.encare.repository.AccountRepository;
 import enclave.encare.encare.repository.UserRepository;
 import enclave.encare.encare.service.AccountService;
+import enclave.encare.encare.service.StorageService;
 import enclave.encare.encare.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Value("${cloud.aws.region.static}")
+    private String region;
+
+    @Value("${application.bucket.name}")
+    private String bucketName;
+
+    @Autowired
+    StorageService storageService;
+
+    @Autowired
+    AccountRepository accountRepository;
 
     @Autowired
     UserRepository userRepository;
@@ -22,6 +38,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse findById(long id) {
         return transformData(userRepository.findByUserId(id));
+    }
+
+    @Override
+    public long findUserIdByAccountId(long accountId) {
+        return userRepository.findUserByAccountId(accountId).getUserId();
     }
 
     @Override
@@ -38,6 +59,14 @@ public class UserServiceImpl implements UserService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void uploadAvatar(ImageForm imageForm) {
+        String avatar ="https://"+bucketName+".s3."+region+".amazonaws.com/"+storageService.uploadFile(imageForm.getFile());
+        Account account = accountRepository.findByAccountId(imageForm.getAccountId());
+        account.setAvatar(avatar);
+        accountRepository.save(account);
     }
 
     private UserResponse transformData(User user){

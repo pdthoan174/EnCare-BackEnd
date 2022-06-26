@@ -5,10 +5,12 @@ import enclave.encare.encare.model.Appointment;
 import enclave.encare.encare.model.Feedback;
 import enclave.encare.encare.model.User;
 import enclave.encare.encare.modelResponse.FeedbackResponse;
+import enclave.encare.encare.modelResponse.UserResponse;
 import enclave.encare.encare.repository.FeedbackRepository;
 import enclave.encare.encare.service.AppointmentService;
 import enclave.encare.encare.service.DoctorService;
 import enclave.encare.encare.service.FeedbackService;
+import enclave.encare.encare.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,9 @@ public class FeedbackServiceImpl implements FeedbackService {
     @Autowired
     DoctorService doctorService;
 
+    @Autowired
+    UserService userService;
+
     @Override
     public FeedbackResponse findById(long id) {
         return transformData(feedbackRepository.findByFeedbackId(id));
@@ -32,7 +37,8 @@ public class FeedbackServiceImpl implements FeedbackService {
     @Override
     public boolean newFeedback(FeedbackForm feedbackForm) {
         if (checkFeedback(feedbackForm.getAppointmentId())){
-            User user = new User(feedbackForm.getUserId());
+            long userId = userService.findUserIdByAccountId(feedbackForm.getAccountUserId());
+            User user = new User(userId);
             Appointment appointment = new Appointment(feedbackForm.getAppointmentId());
 
             Feedback feedback = new Feedback();

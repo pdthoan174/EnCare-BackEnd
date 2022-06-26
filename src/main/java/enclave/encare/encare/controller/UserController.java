@@ -2,6 +2,7 @@ package enclave.encare.encare.controller;
 
 import enclave.encare.encare.form.AppointmentForm;
 import enclave.encare.encare.form.FeedbackForm;
+import enclave.encare.encare.form.ImageForm;
 import enclave.encare.encare.form.InformationForm;
 import enclave.encare.encare.jwt.JwtTokenProvider;
 import enclave.encare.encare.model.ResponseObject;
@@ -44,7 +45,7 @@ public class UserController {
 
     @PostMapping("/update")
     public ResponseEntity<ResponseObject> update(@RequestBody InformationForm informationForm){
-        informationForm.setAccountId(getUserId());
+        informationForm.setAccountId(getAccountId());
         accountService.updateInformation(informationForm);
         return ResponseEntity.status(HttpStatus.OK).body(
             new ResponseObject(200, "Đã cập nhập thông tin", "")
@@ -53,7 +54,7 @@ public class UserController {
 
     @PostMapping("/newAppointment")
     public ResponseEntity<ResponseObject> newAppointment(@RequestBody AppointmentForm appointmentForm){
-        appointmentForm.setUserId(getUserId());
+        appointmentForm.setAccountUserId(getAccountId());
         if (appointmentService.newAppointment(appointmentForm)){
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(200, "Đặt lịch thành công", "")
@@ -66,7 +67,7 @@ public class UserController {
 
     @PostMapping("/feedback")
     public ResponseEntity<ResponseObject> feedback(@RequestBody FeedbackForm feedbackForm){
-        feedbackForm.setUserId(getUserId());
+        feedbackForm.setAccountUserId(getAccountId());
         if(feedbackService.newFeedback(feedbackForm)){
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(200,"Đánh giá thành công","")
@@ -79,15 +80,15 @@ public class UserController {
 
     @GetMapping("/history")
     public ResponseEntity<ResponseObject> historyAppointment(@RequestParam(required = false, name = "page", defaultValue = "0") int page){
-        long userId = getUserId();
+        long accountId = getAccountId();
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200,"Lịch sử khám bệnh", appointmentService.historyAppointmentUser(userId, page))
+                new ResponseObject(200,"Lịch sử khám bệnh", appointmentService.historyAppointmentUser(accountId, page))
         );
     }
 
     @GetMapping("/cancel")
     public ResponseEntity<ResponseObject> cancelAppointment(@RequestParam(required = true, name = "appointmentId") long appoinmentId){
-        if (appointmentService.cancelAppointment(getUserId(), appoinmentId)){
+        if (appointmentService.cancelAppointment(getAccountId(), appoinmentId)){
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(200, "Đã hủy lịch hẹn", "")
             );
@@ -97,7 +98,16 @@ public class UserController {
         );
     }
 
-    private long getUserId(){
+    @PostMapping("/uploadAvatar")
+    public ResponseEntity<ResponseObject> uploadAvatar(@ModelAttribute("imageForm") ImageForm imageForm){
+        imageForm.setAccountId(getAccountId());
+        userService.uploadAvatar(imageForm);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(200,"Đã cập nhập avatar","")
+        );
+    }
+
+    private long getAccountId(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication!=null){
             String token = jwtTokenProvider.generateToken((CustomUserDetail) authentication.getPrincipal());

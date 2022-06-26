@@ -46,6 +46,12 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
+    public long findDoctorIdByAccountId(long accountId) {
+        System.out.println("find doctorId by account id");
+        return doctorRepository.findDoctorByAccountId(accountId).getDoctorId();
+    }
+
+    @Override
     public boolean register(RegisterFormDoctor registerFormDoctor) {
         long id = accountService.registerDoctor(registerFormDoctor);
         if (id != 0){
