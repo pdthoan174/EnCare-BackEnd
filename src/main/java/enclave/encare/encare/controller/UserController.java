@@ -1,9 +1,11 @@
 package enclave.encare.encare.controller;
 
+import enclave.encare.encare.form.AppointmentForm;
 import enclave.encare.encare.form.InformationForm;
 import enclave.encare.encare.jwt.JwtTokenProvider;
 import enclave.encare.encare.model.ResponseObject;
 import enclave.encare.encare.service.AccountService;
+import enclave.encare.encare.service.AppointmentService;
 import enclave.encare.encare.service.UserService;
 import enclave.encare.encare.until.CustomUserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class UserController {
     @Autowired
     AccountService accountService;
 
+    @Autowired
+    AppointmentService appointmentService;
+
 
     @RequestMapping("/abc")
     public String index(){
@@ -41,6 +46,19 @@ public class UserController {
         accountService.updateInformation(informationForm);
         return ResponseEntity.status(HttpStatus.OK).body(
             new ResponseObject(200, "Đã cập nhập thông tin", "")
+        );
+    }
+
+    @PostMapping("/newAppointment")
+    public ResponseEntity<ResponseObject> newAppointment(@RequestBody AppointmentForm appointmentForm){
+        appointmentForm.setUserId(getUserId());
+        if (appointmentService.newAppointment(appointmentForm)){
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(200, "Đặt lịch thành công", "")
+            );
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ResponseObject(400, "Thời gian bạn chọn đã được đặt lịch ", "")
         );
     }
 

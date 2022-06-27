@@ -11,6 +11,6 @@ public class RegisterFormUser {
     private String phone;
     private String password;
     private String name;
-    private String description;
-    private String birthDay;
+//    private String description;
+//    private String birthDay;
 }

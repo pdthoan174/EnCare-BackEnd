@@ -19,7 +19,9 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponse findById(long id) {
-        return transformData(categoryRepository.findByCategoryId(id));
+        Category category = categoryRepository.findByCategoryId(id);
+        if (category==null) return null;
+        return transformData(category);
     }
 
     @Override
@@ -43,8 +45,8 @@ public class CategoryServiceImpl implements CategoryService {
         CategoryResponse categoryResponse = new CategoryResponse();
 
         categoryResponse.setCategoryId(category.getCategoryId());
-        categoryResponse.setName(categoryResponse.getName());
-        categoryResponse.setDescription(categoryResponse.getDescription());
+        categoryResponse.setName(category.getName());
+        categoryResponse.setDescription(category.getDescription());
 
         return categoryResponse;
     }
