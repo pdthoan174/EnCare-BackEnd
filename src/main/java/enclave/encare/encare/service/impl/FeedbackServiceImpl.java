@@ -42,7 +42,7 @@ public class FeedbackServiceImpl implements FeedbackService {
             Appointment appointment = new Appointment(feedbackForm.getAppointmentId());
 
             Feedback feedback = new Feedback();
-            feedback.setRating(feedbackForm.getRating());
+            feedback.setRating(Math.round(feedbackForm.getRating()));
             feedback.setComment(feedbackForm.getComment());
             feedback.setUser(user);
             feedback.setAppointment(appointment);

@@ -46,9 +46,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         Date day = TimeConfig.getDate(appointmentForm.getDay());
         int time = appointmentForm.getTime();
         long userId = userService.findUserIdByAccountId(appointmentForm.getAccountUserId());
-        System.out.println(userId);
-
-        System.out.println("information of account doctor and user");
         if (findTimeAndDay(appointmentForm.getDoctorId(), time, day)){
             User user = new User(userId);
             Doctor doctor = new Doctor(appointmentForm.getDoctorId());
@@ -134,7 +131,6 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     public boolean findTimeAndDay(long doctorId, int time, Date date){
-        System.out.println("check time");
 //        Appointment appointment = appointmentRepository.findByTimeAndDay(time, date);
         Doctor doctor = new Doctor(doctorId);
         List<Appointment> appointment = appointmentRepository.findByDoctorAndTimeAndDayEquals(doctor, time, date);

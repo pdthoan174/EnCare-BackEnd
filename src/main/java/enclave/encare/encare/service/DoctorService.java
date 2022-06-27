@@ -9,7 +9,7 @@ public interface DoctorService {
     DoctorResponse findById(long id);
     long findDoctorIdByAccountId(long accountId);
     boolean register(RegisterFormDoctor registerFormDoctor);
-    List<DoctorResponse> listDoctorOfCategoryRating(long categoryId, int page, float rating);
-    void updateRating(long appointmentId, int number);
+    List<DoctorResponse> listDoctorOfCategoryRating(long categoryId, int page, float rating, double lon, double lat);
+    void updateRating(long appointmentId, float number);
     List<DoctorResponse> findLikeName(String name, int page);
 }

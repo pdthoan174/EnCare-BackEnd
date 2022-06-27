@@ -2,6 +2,8 @@ package enclave.encare.encare.service.impl;
 
 import enclave.encare.encare.config.NumberConfig;
 import enclave.encare.encare.form.RegisterFormDoctor;
+import enclave.encare.encare.form.mapbox.Distance;
+import enclave.encare.encare.form.mapbox.Location;
 import enclave.encare.encare.model.Account;
 import enclave.encare.encare.model.Category;
 import enclave.encare.encare.model.Doctor;
@@ -36,6 +38,9 @@ public class DoctorServiceImpl implements DoctorService {
     @Autowired
     HospitalService hospitalService;
 
+    @Autowired
+    MapboxService mapboxService;
+
     @Override
     public DoctorResponse findById(long id) {
         Doctor doctor = doctorRepository.findByDoctorId(id);
@@ -60,7 +65,7 @@ public class DoctorServiceImpl implements DoctorService {
             Hospital hospital = new Hospital(registerFormDoctor.getHospitalId());
 
             Doctor doctor = new Doctor();
-            doctor.setRating(0);
+            doctor.setRating(0f);
             doctor.setCountRating(0);
             doctor.setAccount(account);
             doctor.setCategory(category);
@@ -73,24 +78,35 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public List<DoctorResponse> listDoctorOfCategoryRating(long categoryId, int page, float rating) {
+    public List<DoctorResponse> listDoctorOfCategoryRating(long categoryId, int page, float rating, double lon, double lat) {
         Pageable pageable = PageRequest.of(page, 6);
         List<Doctor> doctorList = doctorRepository.findDoctorByCategoryAndRatingDesc(categoryId, rating, pageable);
         List<DoctorResponse> doctorResponseList = new ArrayList<DoctorResponse>();
-        for (Doctor doctor:doctorList){
-            DoctorResponse doctorResponse = transformData(doctor);
-            doctorResponseList.add(doctorResponse);
+        if (lon != 0 && lat!=0){
+            Location start = new Location(lon, lat);
+            for (Doctor doctor:doctorList){
+                DoctorResponse doctorResponse = transformData(doctor);
+                Location end = new Location(doctorResponse.getHospitalResponse().getLongMap(), doctorResponse.getHospitalResponse().getLatMap());
+                doctorResponse.setDistance(mapboxService.getDistance(start, end));
+                doctorResponseList.add(doctorResponse);
+            }
+        } else {
+            for (Doctor doctor:doctorList){
+                DoctorResponse doctorResponse = transformData(doctor);
+                doctorResponseList.add(doctorResponse);
+            }
         }
+
         return doctorResponseList;
     }
 
     @Override
-    public void updateRating(long appointmentId, int number) {
+    public void updateRating(long appointmentId, float number) {
         Doctor doctor = appointmentRepository.findDoctorByAppointmentId(appointmentId);
         long count = doctor.getCountRating();
         float rating = doctor.getRating();
         float value = (count*rating+number)/(count+1);
-        doctor.setRating(NumberConfig.round(value));
+        doctor.setRating(value);
         doctor.setCountRating(count+1);
 
         doctorRepository.save(doctor);
@@ -112,7 +128,7 @@ public class DoctorServiceImpl implements DoctorService {
         DoctorResponse doctorResponse = new DoctorResponse();
 
         doctorResponse.setDoctorId(doctor.getDoctorId());
-        doctorResponse.setRating(doctor.getRating());
+        doctorResponse.setRating(NumberConfig.round(doctor.getRating()));
         doctorResponse.setCountRating(doctor.getCountRating());
 
         doctorResponse.setAccountResponse(accountService.findById(doctor.getAccount().getAccountId()));

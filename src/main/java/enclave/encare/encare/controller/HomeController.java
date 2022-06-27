@@ -1,9 +1,12 @@
 package enclave.encare.encare.controller;
 
 import enclave.encare.encare.form.*;
+import enclave.encare.encare.form.mapbox.Distance;
+import enclave.encare.encare.form.mapbox.Location;
 import enclave.encare.encare.jwt.JwtTokenProvider;
 import enclave.encare.encare.model.Account;
 import enclave.encare.encare.model.ResponseObject;
+import enclave.encare.encare.modelResponse.LoginResponse;
 import enclave.encare.encare.service.*;
 import enclave.encare.encare.until.CustomUserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 public class HomeController {
@@ -39,6 +43,9 @@ public class HomeController {
     @Autowired
     AppointmentService appointmentService;
 
+    @Autowired
+    MapboxService mapboxService;
+
     @PostMapping("/login")
     public ResponseEntity<ResponseObject> login(@RequestBody LoginForm loginForm){
         Authentication authentication = authenticationManager.authenticate(
@@ -50,9 +57,10 @@ public class HomeController {
         CustomUserDetail customUserDetail = (CustomUserDetail) authentication.getPrincipal();
         Account account = customUserDetail.getAccount();
         String token = jwtTokenProvider.generateToken(customUserDetail);
+        LoginResponse loginResponse = new LoginResponse(account.getAccountId(), account.getRole(), token);
 
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200,"type: "+account.getRole(), token)
+                new ResponseObject(200,"login success", loginResponse)
         );
     }
 
@@ -90,10 +98,12 @@ public class HomeController {
     @GetMapping("/listDoctor")
     public ResponseEntity<ResponseObject> listDoctorOfCategoryIdAndRating(
             @RequestParam(required = true, name = "categoryId") long categoryId,
+            @RequestParam(required = false, name = "lon", defaultValue = "0") double lon,
+            @RequestParam(required = false, name = "lat", defaultValue = "0") double lat,
             @RequestParam(required = false, name = "page", defaultValue = "0") int page,
             @RequestParam(required = false, name = "rating", defaultValue = "0") int rating){
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200, "List Category", doctorService.listDoctorOfCategoryRating(categoryId, page, rating))
+                new ResponseObject(200, "List Category", doctorService.listDoctorOfCategoryRating(categoryId, page, rating, lon, lat))
         );
     }
 
@@ -112,6 +122,17 @@ public class HomeController {
 //        System.out.println(link);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(200, "upload success", "")
+        );
+    }
+
+
+    @GetMapping("/check")
+    public ResponseEntity<ResponseObject> check(){
+        Location start = new Location(108.24013182677783,15.975729316697397);
+        Location end = new Location(108.22913866009225,16.019262542089308);
+        Distance distance = mapboxService.getDistance(start, end);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(200, "infor", distance)
         );
     }
 }

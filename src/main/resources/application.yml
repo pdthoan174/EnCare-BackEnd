@@ -7,6 +7,8 @@ cloud:
       static: ap-southeast-1
     stack:
       auto: false
+  mapbox:
+    token: pk.eyJ1Ijoic2l4YmxhY2siLCJhIjoiY2w0dzNpYnVyMXFhYjNlazI5OGF6MGJzcyJ9.DMrrU3tLH2gfvfY1wK9G4w
 
 application:
   bucket:

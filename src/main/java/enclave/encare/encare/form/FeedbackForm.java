@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class FeedbackForm {
     private long accountUserId;
     private long appointmentId;
-    private int rating;
+    private float rating;
     private String comment;
 }
