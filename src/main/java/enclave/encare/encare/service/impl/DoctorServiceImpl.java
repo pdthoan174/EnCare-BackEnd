@@ -1,5 +1,7 @@
 package enclave.encare.encare.service.impl;
 
+import enclave.encare.encare.config.TimeConfig;
+import enclave.encare.encare.form.DoctorInformationForm;
 import enclave.encare.encare.form.RegisterFormDoctor;
 import enclave.encare.encare.model.*;
 import enclave.encare.encare.modelResponse.CategoryResponse;
@@ -13,14 +15,22 @@ import enclave.encare.encare.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public class DoctorServiceImpl implements DoctorService {
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Autowired
     DoctorRepository doctorRepository;
@@ -60,6 +70,52 @@ public class DoctorServiceImpl implements DoctorService {
         if (doctor==null)
             return null;
         return transformData(doctor);
+    }
+
+    @Override
+    public boolean updateInfor(DoctorInformationForm doctorInformationForm) throws ParseException {
+
+        Doctor current = doctorRepository.findByDoctorId(doctorInformationForm.getDoctorId());
+        if (current!=null){
+            Account currentAccount = current.getAccount();
+            String name = doctorInformationForm.getName();
+            if (name!=null || name.length()>0)
+            {
+                currentAccount.setName(name);
+            }
+            String stringDate = doctorInformationForm.getBirthDay();
+            TimeConfig timeConfig = new TimeConfig();
+            Date birthDay = timeConfig.getDate(stringDate);
+            if (birthDay!=null)
+            {
+                currentAccount.setBirthday(birthDay);
+            }
+            Pattern password_pattern = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$");
+            String password = doctorInformationForm.getPassword();
+            if ((password!=null||password.length()>0)&&password_pattern.matcher(password).matches())
+            {
+                currentAccount.setPassword(passwordEncoder.encode(password));
+            }
+            String phone = doctorInformationForm.getPhone();
+            Pattern phone_pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
+            if ((phone!=null||phone.length()>0)&&phone_pattern.matcher(phone).matches()){
+                currentAccount.setPhone(phone);
+            }
+            String descriptions = doctorInformationForm.getDescription();
+            if (descriptions!=null || descriptions.length()>0){
+                currentAccount.setDescription(descriptions);
+            }
+
+            currentAccount.setAvatar(doctorInformationForm.getAvatar());
+            currentAccount.setUpdateDate(new Date());
+            current.setAccount(currentAccount);
+            current.setHospital(new Hospital(doctorInformationForm.getHospitalId()));
+            current.setCategory(new Category(doctorInformationForm.getCategoryId()));
+            doctorRepository.save(current);
+            return  true;
+        }
+
+        return false;
     }
 
     @Override

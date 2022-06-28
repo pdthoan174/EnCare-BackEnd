@@ -67,6 +67,18 @@ public class AppointmentServiceImpl implements AppointmentService {
         return false;
     }
 
+    @Override
+    public boolean setDescription(long id, String description) {
+        Appointment appointment = appointmentRepository.findByAppointmentId(id);
+        if (appointment!=null && appointment.getStatus().getStatusId()>2)
+        {
+            appointment.setDescription(description);
+            appointmentRepository.save(appointment);
+            return true;
+        }
+        return false;
+    }
+
     public boolean findTimeAndDay(int time, Date date){
 //        Appointment appointment = appointmentRepository.findByTimeAndDay(time, date);
         List<Appointment> appointment = appointmentRepository.findByTimeAndDayEquals(time, date);

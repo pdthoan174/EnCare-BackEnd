@@ -7,10 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterFormUser {
+public class DoctorInformationForm extends InformationForm {
+    private long doctorId ;
+    private long categoryId;
+    private long hospitalId ;
+    private String avatar;
     private String phone;
-    private String password;
-    private String name;
-    private String description;
-    private String birthDay;
+
 }

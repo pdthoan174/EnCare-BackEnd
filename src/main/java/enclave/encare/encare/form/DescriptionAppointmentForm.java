@@ -1,5 +1,4 @@
 package enclave.encare.encare.form;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,10 +6,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterFormUser {
-    private String phone;
-    private String password;
-    private String name;
+public class DescriptionAppointmentForm {
+    private long id;
     private String description;
-    private String birthDay;
 }
