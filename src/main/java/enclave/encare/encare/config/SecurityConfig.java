@@ -46,6 +46,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/doctor/**").hasAuthority("DOCTOR");
         http.authorizeRequests().antMatchers("/user/**").hasAuthority("USER");
 
+        http.authorizeRequests().anyRequest().authenticated();
+
         http.addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
