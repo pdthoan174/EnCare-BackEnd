@@ -22,7 +22,7 @@ public class ClientUser {
 
         ClientSessionHandler clientSessionHandler = new ClientSessionHandler();
         ListenableFuture<StompSession> listenableFuture = stompClient.connect(
-                "ws://localhost:8081/ws",clientSessionHandler
+                "ws://localhost:8080/ws",clientSessionHandler
         );
         StompSession session = listenableFuture.get();
         session.subscribe("/topic/messages/"+accountUserId,clientSessionHandler);

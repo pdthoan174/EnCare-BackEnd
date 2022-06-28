@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 public class ClientDoctor {
     public static void main(String[] args) throws Exception {
-        long accountDoctorId = 2;
+        long accountDoctorId = 6;
         long channelId = 1;
 
         Scanner scanner = new Scanner(System.in);
@@ -22,7 +22,7 @@ public class ClientDoctor {
 
         ClientSessionHandler clientSessionHandler = new ClientSessionHandler();
         ListenableFuture<StompSession> listenableFuture = stompClient.connect(
-                "ws://localhost:8081/ws",clientSessionHandler
+                "ws://localhost:8080/ws",clientSessionHandler
         );
         StompSession session = listenableFuture.get();
         session.subscribe("/topic/messages/"+accountDoctorId,clientSessionHandler);
