@@ -28,18 +28,19 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     @Override
-    public ChannelResponse loadChannel(long userId, long doctorId) {
-        Account doctor = new Account(doctorId);
-        Account user = new Account(userId);
-        Channel channel = channelRepository.findByDoctorAndUser(doctor, user);
-        if (channel!=null){
-            return transformData(channel);
+    public ChannelResponse findChannelId(long accountUserId, long accountDoctorId) {
+        Channel channel = channelRepository.findChannel(accountDoctorId, accountUserId);
+        if (channel == null){
+            Account doctor = new Account(accountDoctorId);
+            Account user = new Account(accountUserId);
+            Channel c = new Channel();
+            c.setDoctor(doctor);
+            c.setUser(user);
+            return transformData(channelRepository.save(c));
         }
-        channel.setDoctor(doctor);
-        channel.setUser(user);
-        return transformData(channelRepository.save(channel));
-    }
 
+        return transformData(channel);
+    }
 
     private ChannelResponse transformData(Channel channel){
         ChannelResponse channelResponse = new ChannelResponse();
