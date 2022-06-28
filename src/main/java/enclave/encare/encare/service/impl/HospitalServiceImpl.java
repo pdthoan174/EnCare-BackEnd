@@ -7,6 +7,8 @@ import enclave.encare.encare.service.HospitalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class HospitalServiceImpl implements HospitalService {
 
@@ -15,7 +17,11 @@ public class HospitalServiceImpl implements HospitalService {
 
     @Override
     public HospitalResponse findById(long id) {
-        return transformData(hospitalRepository.findByHospitalId(id));
+        Hospital hospital = hospitalRepository.findByHospitalId(id);
+        if (hospital==null){
+            return null;
+        }
+        return transformData(hospital);
     }
 
     private HospitalResponse transformData(Hospital hospital){

@@ -15,8 +15,9 @@ public class AppointmentResponse {
     private long appointmentId;
     private String symptoms;
     private String description;
+    private int time;
 
-    private String time;
+    private String day;
     private String createDate;
     private DoctorResponse doctorResponse;
     private UserResponse userResponse;
