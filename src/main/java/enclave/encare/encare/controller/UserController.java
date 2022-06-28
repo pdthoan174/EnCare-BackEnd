@@ -37,12 +37,6 @@ public class UserController {
     @Autowired
     FeedbackService feedbackService;
 
-
-    @RequestMapping("/abc")
-    public String index(){
-        return "index user";
-    }
-
     @PostMapping("/update")
     public ResponseEntity<ResponseObject> update(@RequestBody InformationForm informationForm){
         informationForm.setAccountId(getAccountId());

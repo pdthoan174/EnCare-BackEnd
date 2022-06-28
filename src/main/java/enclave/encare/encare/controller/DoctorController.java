@@ -6,8 +6,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/doctor")
 public class DoctorController {
-    @RequestMapping("/abc")
-    public String index(){
-        return "index doctor";
-    }
 }

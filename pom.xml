@@ -13,13 +13,13 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>EnCare</name>
     <description>EnCare</description>
-<!--    <properties>-->
-<!--        <java.version>11</java.version>-->
-<!--    </properties>-->
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <java.version>11</java.version>
     </properties>
+<!--    <properties>-->
+<!--        <maven.compiler.source>1.8</maven.compiler.source>-->
+<!--        <maven.compiler.target>1.8</maven.compiler.target>-->
+<!--    </properties>-->
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -71,6 +71,23 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
             <version>1.12.172</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.hateoas</groupId>
+            <artifactId>spring-hateoas</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.9.2</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-ui -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.9</version>
         </dependency>
 
     </dependencies>
