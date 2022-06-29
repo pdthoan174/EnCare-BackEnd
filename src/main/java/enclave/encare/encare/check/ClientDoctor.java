@@ -22,6 +22,7 @@ public class ClientDoctor {
 
         ClientSessionHandler clientSessionHandler = new ClientSessionHandler();
         ListenableFuture<StompSession> listenableFuture = stompClient.connect(
+//                "ws://enclave-encare.herokuapp.com/ws",clientSessionHandler
                 "ws://localhost:8080/ws",clientSessionHandler
         );
         StompSession session = listenableFuture.get();

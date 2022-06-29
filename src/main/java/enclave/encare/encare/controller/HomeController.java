@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
+@RequestMapping("/api")
 public class HomeController {
     @Autowired
     AuthenticationManager authenticationManager;
