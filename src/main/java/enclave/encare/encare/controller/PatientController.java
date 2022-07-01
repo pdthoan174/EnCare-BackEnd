@@ -6,6 +6,7 @@ import enclave.encare.encare.form.ImageForm;
 import enclave.encare.encare.form.InformationForm;
 import enclave.encare.encare.jwt.JwtTokenProvider;
 import enclave.encare.encare.model.ResponseObject;
+import enclave.encare.encare.modelResponse.AppointmentResponse;
 import enclave.encare.encare.service.AccountService;
 import enclave.encare.encare.service.AppointmentService;
 import enclave.encare.encare.service.FeedbackService;
@@ -18,9 +19,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
-@RequestMapping("/api/user")
-public class UserController {
+@RequestMapping("/api/patient")
+public class PatientController {
 
     @Autowired
     JwtTokenProvider jwtTokenProvider;
@@ -38,7 +41,7 @@ public class UserController {
     FeedbackService feedbackService;
 
     @PostMapping("/update")
-    public ResponseEntity<ResponseObject> update(@RequestBody InformationForm informationForm){
+    public ResponseEntity<ResponseObject> update(@Valid @RequestBody InformationForm informationForm){
         informationForm.setAccountId(getAccountId());
         accountService.updateInformation(informationForm);
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -47,7 +50,7 @@ public class UserController {
     }
 
     @PostMapping("/newAppointment")
-    public ResponseEntity<ResponseObject> newAppointment(@RequestBody AppointmentForm appointmentForm){
+    public ResponseEntity<ResponseObject> newAppointment(@Valid @RequestBody AppointmentForm appointmentForm){
         appointmentForm.setAccountUserId(getAccountId());
         if (appointmentService.newAppointment(appointmentForm)){
             return ResponseEntity.status(HttpStatus.OK).body(
@@ -60,7 +63,7 @@ public class UserController {
     }
 
     @PostMapping("/feedback")
-    public ResponseEntity<ResponseObject> feedback(@RequestBody FeedbackForm feedbackForm){
+    public ResponseEntity<ResponseObject> feedback(@Valid @RequestBody FeedbackForm feedbackForm){
         feedbackForm.setAccountUserId(getAccountId());
         if(feedbackService.newFeedback(feedbackForm)){
             return ResponseEntity.status(HttpStatus.OK).body(
@@ -93,8 +96,13 @@ public class UserController {
     }
 
     @PostMapping("/uploadAvatar")
-    public ResponseEntity<ResponseObject> uploadAvatar(@ModelAttribute("imageForm") ImageForm imageForm){
+    public ResponseEntity<ResponseObject> uploadAvatar(@Valid @ModelAttribute("imageForm") ImageForm imageForm){
         imageForm.setAccountId(getAccountId());
+        if (imageForm.getFile().isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400,"Bạn chưa chọn ảnh","")
+            );
+        }
         userService.uploadAvatar(imageForm);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(200,"Đã cập nhập avatar","")

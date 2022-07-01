@@ -49,10 +49,10 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
         if (findByPhone(registerFormUser.getPhone())){
             Account account = new Account();
 
-            account.setPhone(registerFormUser.getPhone());
+            account.setPhone(registerFormUser.getPhone().trim());
             account.setPassword(passwordEncoder.encode(registerFormUser.getPassword()));
-            account.setRole("USER");
-            account.setName(registerFormUser.getName());
+            account.setRole("PATIENT");
+            account.setName(registerFormUser.getName().trim());
             account.setCreateDate(new Date());
 
             return accountRepository.save(account).getAccountId();
@@ -68,10 +68,10 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
             account.setPhone(registerFormDoctor.getPhone());
             account.setPassword(passwordEncoder.encode(registerFormDoctor.getPassword()));
             account.setRole("DOCTOR");
-            account.setName(registerFormDoctor.getName());
+            account.setName(registerFormDoctor.getName().trim());
             account.setBirthday(TimeConfig.getDate(registerFormDoctor.getBirthDay()));
             account.setCreateDate(new Date());
-            account.setDescription(registerFormDoctor.getDescription());
+            account.setDescription(registerFormDoctor.getDescription().trim());
 
             return accountRepository.save(account).getAccountId();
         }
@@ -93,9 +93,11 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
         Account account = accountRepository.findByAccountId(informationForm.getAccountId());
         account.setAccountId(informationForm.getAccountId());
 
-        account.setName(informationForm.getName());
-        account.setBirthday(TimeConfig.getDate(informationForm.getBirthDay()));
-        account.setDescription(informationForm.getDescription());
+        account.setName(informationForm.getName().trim());
+        if (informationForm.getBirthDay()!=null){
+            account.setBirthday(TimeConfig.getDate(informationForm.getBirthDay()));
+        }
+        account.setDescription(informationForm.getDescription().trim());
 
         accountRepository.save(account);
 

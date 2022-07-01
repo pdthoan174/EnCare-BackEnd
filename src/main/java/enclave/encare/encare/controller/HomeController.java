@@ -1,5 +1,7 @@
 package enclave.encare.encare.controller;
 
+import enclave.encare.encare.config.RegexConfig;
+import enclave.encare.encare.config.TimeConfig;
 import enclave.encare.encare.form.*;
 import enclave.encare.encare.form.mapbox.Distance;
 import enclave.encare.encare.form.mapbox.Location;
@@ -10,7 +12,6 @@ import enclave.encare.encare.modelResponse.LoginResponse;
 import enclave.encare.encare.service.*;
 import enclave.encare.encare.until.CustomUserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,10 +19,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
+
+import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 public class HomeController {
     @Autowired
     AuthenticationManager authenticationManager;
@@ -48,7 +50,14 @@ public class HomeController {
     MapboxService mapboxService;
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseObject> login(@RequestBody LoginForm loginForm){
+    public ResponseEntity<ResponseObject> login(@Valid @RequestBody LoginForm loginForm){
+
+        if (!loginForm.getPhone().matches(RegexConfig.phone)){
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(200,"login fail", "Phone number is not in the correct format")
+            );
+        }
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginForm.getPhone(),loginForm.getPassword()
@@ -58,7 +67,7 @@ public class HomeController {
         CustomUserDetail customUserDetail = (CustomUserDetail) authentication.getPrincipal();
         Account account = customUserDetail.getAccount();
         String token = jwtTokenProvider.generateToken(customUserDetail);
-        LoginResponse loginResponse = new LoginResponse(account.getAccountId(), account.getRole(), token);
+        LoginResponse loginResponse = new LoginResponse(account.getAccountId(), account.getRole(), account.getPassword(), token);
 
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(200,"login success", loginResponse)
@@ -66,19 +75,45 @@ public class HomeController {
     }
 
     @PostMapping("/registerUser")
-    public ResponseEntity<ResponseObject> registerUser(@RequestBody RegisterFormUser registerFormUser){
+    public ResponseEntity<ResponseObject> registerUser(@Valid @RequestBody RegisterFormUser registerFormUser){
+        if (!registerFormUser.getPhone().matches(RegexConfig.phone)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400,"Register fail", "Phone number is not in the correct format")
+            );
+        }
+        if (!registerFormUser.getName().matches(RegexConfig.name)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400,"Register fail", "Name is not in the correct format")
+            );
+        }
         if (userService.register(registerFormUser)){
             return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(200,"Register Success", "")
             );
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400,"Register fail", "đã tồn tại số điện thoại này")
+                new ResponseObject(400,"Register fail", "This phone number already exists")
         );
     }
 
     @PostMapping("/registerDoctor")
-    public ResponseEntity<ResponseObject> registerDoctor(@RequestBody RegisterFormDoctor registerFormDoctor){
+    public ResponseEntity<ResponseObject> registerDoctor(@Valid @RequestBody RegisterFormDoctor registerFormDoctor){
+        if (!registerFormDoctor.getPhone().matches(RegexConfig.phone)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400,"Register fail", "Phone number is not in the correct format")
+            );
+        }
+        if (!registerFormDoctor.getName().matches(RegexConfig.name)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400,"Register fail", "Name is not in the correct format")
+            );
+        }
+        if (TimeConfig.getDate(registerFormDoctor.getBirthDay())==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400,"Register fail", "Birthday is not in the correct format")
+            );
+        }
+
         if (doctorService.register(registerFormDoctor)){
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(200,"Register Success", "")
@@ -110,22 +145,11 @@ public class HomeController {
 
 
     @PostMapping("/listFreeTime")
-    public ResponseEntity<ResponseObject> listFreeTimeOfDoctor(@RequestBody FreeTimeForm freeTimeForm){
+    public ResponseEntity<ResponseObject> listFreeTimeOfDoctor(@Valid @RequestBody FreeTimeForm freeTimeForm){
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(200, "Thời gian rảnh", appointmentService.listFreeTime(freeTimeForm))
         );
     }
-
-
-    @PostMapping("/uploadImage")
-    public ResponseEntity<ResponseObject> uploadImage(@ModelAttribute("imageForm") ImageForm imageForm){
-//        String link ="https://"+bucketName+".s3."+region+".amazonaws.com/"+storageService.uploadFile(imageForm.getFile());
-//        System.out.println(link);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200, "upload success", "")
-        );
-    }
-
 
     @GetMapping("/check")
     public ResponseEntity<ResponseObject> check(){

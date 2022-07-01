@@ -4,6 +4,7 @@ import enclave.encare.encare.form.FeedbackForm;
 import enclave.encare.encare.model.Appointment;
 import enclave.encare.encare.model.Feedback;
 import enclave.encare.encare.model.User;
+import enclave.encare.encare.modelResponse.AppointmentResponse;
 import enclave.encare.encare.modelResponse.FeedbackResponse;
 import enclave.encare.encare.modelResponse.UserResponse;
 import enclave.encare.encare.repository.FeedbackRepository;
@@ -40,10 +41,9 @@ public class FeedbackServiceImpl implements FeedbackService {
             long userId = userService.findUserIdByAccountId(feedbackForm.getAccountUserId());
             User user = new User(userId);
             Appointment appointment = new Appointment(feedbackForm.getAppointmentId());
-
             Feedback feedback = new Feedback();
             feedback.setRating(Math.round(feedbackForm.getRating()));
-            feedback.setComment(feedbackForm.getComment());
+            feedback.setComment(feedbackForm.getComment().trim());
             feedback.setUser(user);
             feedback.setAppointment(appointment);
             feedbackRepository.save(feedback);
