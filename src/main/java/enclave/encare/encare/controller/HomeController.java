@@ -9,6 +9,7 @@ import enclave.encare.encare.jwt.JwtTokenProvider;
 import enclave.encare.encare.model.Account;
 import enclave.encare.encare.model.ResponseObject;
 import enclave.encare.encare.modelResponse.LoginResponse;
+import enclave.encare.encare.modelResponse.RegisterResponse;
 import enclave.encare.encare.service.*;
 import enclave.encare.encare.until.CustomUserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -27,6 +29,9 @@ import javax.validation.Valid;
 public class HomeController {
     @Autowired
     AuthenticationManager authenticationManager;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Autowired
     JwtTokenProvider jwtTokenProvider;
@@ -53,8 +58,8 @@ public class HomeController {
     public ResponseEntity<ResponseObject> login(@Valid @RequestBody LoginForm loginForm){
 
         if (!loginForm.getPhone().matches(RegexConfig.phone)){
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject(200,"login fail", "Phone number is not in the correct format")
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400,"login fail", "Phone number is not in the correct format")
             );
         }
 
@@ -87,8 +92,14 @@ public class HomeController {
             );
         }
         if (userService.register(registerFormUser)){
+            RegisterResponse registerResponse = new RegisterResponse(
+                    registerFormUser.getName(),
+                    registerFormUser.getPhone(),
+                    passwordEncoder.encode(registerFormUser.getPassword())
+            );
+
             return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200,"Register Success", "")
+                new ResponseObject(200,"Register Success", registerResponse)
             );
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
