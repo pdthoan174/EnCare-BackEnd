@@ -1,5 +1,6 @@
 package enclave.encare.encare.controller;
 
+import enclave.encare.encare.config.TimeConfig;
 import enclave.encare.encare.form.DescriptionAppointmentForm;
 import enclave.encare.encare.form.DoctorInformationForm;
 import enclave.encare.encare.model.ResponseObject;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -141,12 +143,41 @@ public class DoctorController {
 //                new ResponseObject(200, "List Category", doctorService.listDoctorOfCategory(categoryId,page))
 //        );
 //    }
+    @GetMapping("/appointment/doctorId={doctorId}")
+    public ResponseEntity<ResponseObject> appointmentByDoctorId(@PathVariable("doctorId") long doctorId) {
+
+        if (doctorService.findById(doctorId)!=null){
+            List<AppointmentResponse> appointmentResponseList = appointmentService.findByDoctorId(doctorId);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(200, "Appointment by doctorId", appointmentResponseList)
+            );
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ResponseObject(400, "No has appointment by doctorId", "Failed"));
+    }
     @GetMapping("/confirm/appointmentId={appointmentId}")
     public ResponseEntity<ResponseObject> confirmAppointment(@PathVariable("appointmentId") long appointmentId) {
 
         AppointmentResponse appointmentResponse = appointmentService.findById(appointmentId);
+//        List<AppointmentResponse> appointmentResponseList = appointmentService.
         boolean confirm = false;
+
         if (appointmentResponse != null && appointmentResponse.getStatusResponse().getStatusId() == 2) {
+            List<AppointmentResponse> appointmentResponseList =appointmentService.findByDoctorId(appointmentResponse.getDoctorResponse().getDoctorId());
+            for (AppointmentResponse a:appointmentResponseList){
+                int newAppointmentTime = appointmentResponse.getTime();
+                String newAppointmentDate = appointmentResponse.getDay();
+                if (a.getAppointmentId()!=appointmentResponse.getAppointmentId()
+                        &&a.getDay().equals(newAppointmentDate)
+                        &&a.getTime()==newAppointmentTime
+                        && (a.getStatusResponse().getStatusId() != 1
+                )           || a.getStatusResponse().getStatusId() != 5)
+                {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                            new ResponseObject(400, "Confirm appointment", "Time is invalid"));
+                }
+            }
             confirm = doctorService.changeStatusAppointment(appointmentId, 3);
         }
         if (confirm) {

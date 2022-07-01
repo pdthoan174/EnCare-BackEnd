@@ -15,6 +15,7 @@ import enclave.encare.encare.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -79,6 +80,16 @@ public class AppointmentServiceImpl implements AppointmentService {
         return false;
     }
 
+    @Override
+    public List<AppointmentResponse> findByDoctorId(long doctorId) {
+        List<AppointmentResponse> appointmentResponseList = new ArrayList<>();
+        List<Appointment> appointmentList = appointmentRepository.findByDoctorDoctorId(doctorId);
+        if (appointmentList != null){
+            appointmentResponseList = transformData(appointmentList);
+        }
+        return appointmentResponseList;
+    }
+
     public boolean findTimeAndDay(int time, Date date){
 //        Appointment appointment = appointmentRepository.findByTimeAndDay(time, date);
         List<Appointment> appointment = appointmentRepository.findByTimeAndDayEquals(time, date);
@@ -102,5 +113,13 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointmentResponse.setStatusResponse(statusService.findById(appointment.getStatus().getStatusId()));
 
         return appointmentResponse;
+    }
+    private List<AppointmentResponse> transformData(List<Appointment> appointmentList){
+
+        List<AppointmentResponse> appointmentResponseList = new ArrayList<>();
+        for (Appointment appointment: appointmentList){
+            appointmentResponseList.add(transformData(appointment));
+        }
+        return appointmentResponseList;
     }
 }

@@ -111,11 +111,11 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
         AccountResponse accountResponse = new AccountResponse();
 
         accountResponse.setAccountId(account.getAccountId());
-        accountResponse.setPhone(accountResponse.getPhone());
-        accountResponse.setRole(accountResponse.getRole());
-        accountResponse.setName(accountResponse.getName());
-        accountResponse.setAvatar(accountResponse.getAvatar());
-        accountResponse.setDescription(accountResponse.getDescription());
+        accountResponse.setPhone(account.getPhone());
+        accountResponse.setRole(account.getRole());
+        accountResponse.setName(account.getName());
+        accountResponse.setAvatar(account.getAvatar());
+        accountResponse.setDescription(account.getDescription());
         accountResponse.setBirthday(TimeConfig.getTime(account.getBirthday()));
         accountResponse.setCreateDate(TimeConfig.getTime(account.getCreateDate()));
 
