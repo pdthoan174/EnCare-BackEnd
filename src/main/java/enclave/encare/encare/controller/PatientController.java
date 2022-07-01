@@ -1,9 +1,6 @@
 package enclave.encare.encare.controller;
 
-import enclave.encare.encare.form.AppointmentForm;
-import enclave.encare.encare.form.FeedbackForm;
-import enclave.encare.encare.form.ImageForm;
-import enclave.encare.encare.form.InformationForm;
+import enclave.encare.encare.form.*;
 import enclave.encare.encare.jwt.JwtTokenProvider;
 import enclave.encare.encare.model.ResponseObject;
 import enclave.encare.encare.modelResponse.AppointmentResponse;
@@ -106,6 +103,19 @@ public class PatientController {
         userService.uploadAvatar(imageForm);
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(200,"Đã cập nhập avatar","")
+        );
+    }
+
+    @PostMapping("/newPassword")
+    public ResponseEntity<ResponseObject> newPassowrd(@Valid @RequestBody NewPasswordForm newPasswordForm){
+        newPasswordForm.setAccountId(getAccountId());
+        if(accountService.updatePassword(newPasswordForm)){
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(200,"Đã cập nhập mập khẩu","")
+            );
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ResponseObject(400,"Không thể cập nhập mật khẩu","Mật khẩu cũ sai")
         );
     }
 

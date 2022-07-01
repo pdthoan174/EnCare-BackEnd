@@ -2,6 +2,7 @@ package enclave.encare.encare.service.impl;
 
 import enclave.encare.encare.config.TimeConfig;
 import enclave.encare.encare.form.InformationForm;
+import enclave.encare.encare.form.NewPasswordForm;
 import enclave.encare.encare.form.RegisterFormDoctor;
 import enclave.encare.encare.form.RegisterFormUser;
 import enclave.encare.encare.model.Account;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -107,6 +109,22 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
     @Override
     public AccountResponse findById(long accountId) {
         return transformData(accountRepository.findByAccountId(accountId));
+    }
+
+    @Override
+    public boolean updatePassword(NewPasswordForm newPasswordForm) {
+        if (checkPass(newPasswordForm.getOldPassword(), newPasswordForm.getAccountId())){
+            Account account = accountRepository.findByAccountId(newPasswordForm.getAccountId());
+            account.setPassword(passwordEncoder.encode(newPasswordForm.getNewPassword()));
+            accountRepository.save(account);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkPass(String oldPass, long accountId){
+        Account account = accountRepository.findByAccountId(accountId);
+        return BCrypt.checkpw(oldPass, account.getPassword());
     }
 
     private AccountResponse transformData(Account account){

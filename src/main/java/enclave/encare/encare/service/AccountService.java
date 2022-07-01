@@ -1,6 +1,7 @@
 package enclave.encare.encare.service;
 
 import enclave.encare.encare.form.InformationForm;
+import enclave.encare.encare.form.NewPasswordForm;
 import enclave.encare.encare.form.RegisterFormDoctor;
 import enclave.encare.encare.form.RegisterFormUser;
 import enclave.encare.encare.modelResponse.AccountResponse;
@@ -13,4 +14,5 @@ public interface AccountService {
     boolean findByPhone(String phone);
     boolean updateInformation(InformationForm informationForm);
     AccountResponse findById(long accountId);
+    boolean updatePassword(NewPasswordForm newPasswordForm);
 }
