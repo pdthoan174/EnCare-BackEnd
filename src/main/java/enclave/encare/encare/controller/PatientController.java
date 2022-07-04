@@ -42,7 +42,7 @@ public class PatientController {
         informationForm.setAccountId(getAccountId());
         accountService.updateInformation(informationForm);
         return ResponseEntity.status(HttpStatus.OK).body(
-            new ResponseObject(200, "Đã cập nhập thông tin", "")
+            new ResponseObject(200, "Update Information success", "")
         );
     }
 
@@ -51,16 +51,16 @@ public class PatientController {
         appointmentForm.setAccountUserId(getAccountId());
         if (doctorService.findById(appointmentForm.getDoctorId())==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseObject(400, "Không tồn tại bác sĩ này", "")
+                    new ResponseObject(400, "This doctor does not exist", "")
             );
         }
         if (appointmentService.newAppointment(appointmentForm)){
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject(200, "Đặt lịch thành công", "")
+                    new ResponseObject(200, "New appointment success", "")
             );
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400, "Thời gian bạn chọn đã được đặt lịch ", "")
+                new ResponseObject(400, "The time you selected has been scheduled", "")
         );
     }
 
@@ -69,16 +69,16 @@ public class PatientController {
         feedbackForm.setAccountUserId(getAccountId());
         if (appointmentService.findById(feedbackForm.getAppointmentId())==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseObject(400, "Không tồn tại appointment này", "")
+                    new ResponseObject(400, "This appointment does not exist", "")
             );
         }
         if(feedbackService.newFeedback(feedbackForm)){
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject(200,"Đánh giá thành công","")
+                    new ResponseObject(200,"Feedback success","")
             );
         }
         return ResponseEntity.status(HttpStatus.OK).body(
-            new ResponseObject(200, "Đánh giá thất bại","Mục này đã được đánh giá")
+            new ResponseObject(200, "Feedback success","This appointment already feedback")
         );
     }
 
@@ -86,7 +86,7 @@ public class PatientController {
     public ResponseEntity<ResponseObject> historyAppointment(@RequestParam(required = false, name = "page", defaultValue = "0") int page){
         long accountId = getAccountId();
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200,"Lịch sử khám bệnh", appointmentService.historyAppointmentUser(accountId, page))
+                new ResponseObject(200,"History appointment", appointmentService.historyAppointmentUser(accountId, page))
         );
     }
 
@@ -94,12 +94,12 @@ public class PatientController {
     public ResponseEntity<ResponseObject> cancelAppointment(@RequestParam(required = true, name = "appointmentId") long appoinmentId){
         if (appointmentService.findById(appoinmentId)==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseObject(400, "Hủy không thành công", "Không tồn tại lịch khám này")
+                    new ResponseObject(400, "This appointment does not exist", "")
             );
         }
         appointmentService.cancelAppointment(getAccountId(), appoinmentId);
         return ResponseEntity.status(HttpStatus.OK).body(
-            new ResponseObject(200, "Đã hủy lịch hẹn", "")
+            new ResponseObject(200, "Cancel Appointment success", "")
         );
     }
 
@@ -108,12 +108,12 @@ public class PatientController {
         imageForm.setAccountId(getAccountId());
         if (imageForm.getFile().isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseObject(400,"Bạn chưa chọn ảnh","")
+                    new ResponseObject(400,"You haven't selected a photo yet","")
             );
         }
         userService.uploadAvatar(imageForm);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200,"Đã cập nhập avatar","")
+                new ResponseObject(200,"Update avatar","")
         );
     }
 
@@ -122,11 +122,11 @@ public class PatientController {
         newPasswordForm.setAccountId(getAccountId());
         if(accountService.updatePassword(newPasswordForm)){
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject(200,"Đã cập nhập mập khẩu","")
+                    new ResponseObject(200,"Update new password success","")
             );
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400,"Không thể cập nhập mật khẩu","Mật khẩu cũ sai")
+                new ResponseObject(400,"Update new password fail","Old password fail")
         );
     }
 

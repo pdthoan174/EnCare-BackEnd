@@ -130,7 +130,7 @@ public class HomeController {
             );
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400,"Register fail", "đã tồn tại số điện thoại này")
+                new ResponseObject(400,"Register fail", "This phone number already exists")
         );
     }
 
@@ -152,7 +152,7 @@ public class HomeController {
         CategoryResponse categoryResponse = categoryService.findById(categoryId);
         if (categoryResponse==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseObject(400, "List Category fail", "Không tìm thấy categoryId này")
+                    new ResponseObject(400, "This category does not exist", "")
             );
         }
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -164,7 +164,7 @@ public class HomeController {
     @PostMapping("/listFreeTime")
     public ResponseEntity<ResponseObject> listFreeTimeOfDoctor(@Valid @RequestBody FreeTimeForm freeTimeForm){
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200, "Thời gian rảnh", appointmentService.listFreeTime(freeTimeForm))
+                new ResponseObject(200, "List free time", appointmentService.listFreeTime(freeTimeForm))
         );
     }
 
@@ -173,7 +173,7 @@ public class HomeController {
         CategoryResponse categoryResponse = categoryService.findById(6);
         if (categoryResponse==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseObject(400, "Category fail", "Không tồn tại danh mục này")
+                    new ResponseObject(400, "Category fail", "This category does not exist")
             );
         }
         return ResponseEntity.status(HttpStatus.OK).body(
