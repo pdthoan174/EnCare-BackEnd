@@ -3,11 +3,10 @@ package enclave.encare.encare.controller;
 import enclave.encare.encare.config.RegexConfig;
 import enclave.encare.encare.config.TimeConfig;
 import enclave.encare.encare.form.*;
-import enclave.encare.encare.form.mapbox.Distance;
-import enclave.encare.encare.form.mapbox.Location;
 import enclave.encare.encare.jwt.JwtTokenProvider;
 import enclave.encare.encare.model.Account;
 import enclave.encare.encare.model.ResponseObject;
+import enclave.encare.encare.modelResponse.CategoryResponse;
 import enclave.encare.encare.modelResponse.LoginResponse;
 import enclave.encare.encare.modelResponse.RegisterResponse;
 import enclave.encare.encare.service.*;
@@ -149,6 +148,13 @@ public class HomeController {
             @RequestParam(required = false, name = "lat", defaultValue = "0") double lat,
             @RequestParam(required = false, name = "page", defaultValue = "0") int page,
             @RequestParam(required = false, name = "rating", defaultValue = "0") int rating){
+
+        CategoryResponse categoryResponse = categoryService.findById(categoryId);
+        if (categoryResponse==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400, "List Category fail", "Không tìm thấy categoryId này")
+            );
+        }
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(200, "List Category", doctorService.listDoctorOfCategoryRating(categoryId, page, rating, lon, lat))
         );
@@ -164,11 +170,14 @@ public class HomeController {
 
     @GetMapping("/check")
     public ResponseEntity<ResponseObject> check(){
-        Location start = new Location(108.24013182677783,15.975729316697397);
-        Location end = new Location(108.22913866009225,16.019262542089308);
-        Distance distance = mapboxService.getDistance(start, end);
+        CategoryResponse categoryResponse = categoryService.findById(6);
+        if (categoryResponse==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400, "Category fail", "Không tồn tại danh mục này")
+            );
+        }
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200, "infor", distance)
+                new ResponseObject(200, "infor", categoryResponse)
         );
     }
 }

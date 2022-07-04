@@ -32,7 +32,15 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     public FeedbackResponse findById(long id) {
-        return transformData(feedbackRepository.findByFeedbackId(id));
+        try {
+            Feedback feedback = feedbackRepository.findByFeedbackId(id);
+            if (feedback!=null){
+                return transformData(feedbackRepository.findByFeedbackId(id));
+            }
+            return  null;
+        } catch (Exception e){
+            return null;
+        }
     }
 
     @Override

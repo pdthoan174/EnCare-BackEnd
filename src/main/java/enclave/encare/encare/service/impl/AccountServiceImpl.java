@@ -108,7 +108,15 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
 
     @Override
     public AccountResponse findById(long accountId) {
-        return transformData(accountRepository.findByAccountId(accountId));
+        try {
+            Account account = accountRepository.findByAccountId(accountId);
+            if (account!=null){
+                return transformData(account);
+            }
+            return null;
+        } catch (Exception e){
+            return null;
+        }
     }
 
     @Override

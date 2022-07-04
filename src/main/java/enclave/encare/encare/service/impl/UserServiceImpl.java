@@ -37,7 +37,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse findById(long id) {
-        return transformData(userRepository.findByUserId(id));
+        try {
+            User user = userRepository.findByUserId(id);
+            if (user!=null){
+                return transformData(userRepository.findByUserId(id));
+            }
+            return null;
+        } catch (Exception e){
+            return null;
+        }
     }
 
     @Override

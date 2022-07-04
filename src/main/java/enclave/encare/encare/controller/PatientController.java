@@ -4,10 +4,7 @@ import enclave.encare.encare.form.*;
 import enclave.encare.encare.jwt.JwtTokenProvider;
 import enclave.encare.encare.model.ResponseObject;
 import enclave.encare.encare.modelResponse.AppointmentResponse;
-import enclave.encare.encare.service.AccountService;
-import enclave.encare.encare.service.AppointmentService;
-import enclave.encare.encare.service.FeedbackService;
-import enclave.encare.encare.service.UserService;
+import enclave.encare.encare.service.*;
 import enclave.encare.encare.until.CustomUserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,6 +34,9 @@ public class PatientController {
     @Autowired
     FeedbackService feedbackService;
 
+    @Autowired
+    DoctorService doctorService;
+
     @PostMapping("/update")
     public ResponseEntity<ResponseObject> update(@Valid @RequestBody InformationForm informationForm){
         informationForm.setAccountId(getAccountId());
@@ -49,6 +49,11 @@ public class PatientController {
     @PostMapping("/newAppointment")
     public ResponseEntity<ResponseObject> newAppointment(@Valid @RequestBody AppointmentForm appointmentForm){
         appointmentForm.setAccountUserId(getAccountId());
+        if (doctorService.findById(appointmentForm.getDoctorId())==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400, "Không tồn tại bác sĩ này", "")
+            );
+        }
         if (appointmentService.newAppointment(appointmentForm)){
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(200, "Đặt lịch thành công", "")
@@ -62,6 +67,11 @@ public class PatientController {
     @PostMapping("/feedback")
     public ResponseEntity<ResponseObject> feedback(@Valid @RequestBody FeedbackForm feedbackForm){
         feedbackForm.setAccountUserId(getAccountId());
+        if (appointmentService.findById(feedbackForm.getAppointmentId())==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400, "Không tồn tại appointment này", "")
+            );
+        }
         if(feedbackService.newFeedback(feedbackForm)){
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(200,"Đánh giá thành công","")
@@ -82,13 +92,14 @@ public class PatientController {
 
     @GetMapping("/cancel")
     public ResponseEntity<ResponseObject> cancelAppointment(@RequestParam(required = true, name = "appointmentId") long appoinmentId){
-        if (appointmentService.cancelAppointment(getAccountId(), appoinmentId)){
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject(200, "Đã hủy lịch hẹn", "")
+        if (appointmentService.findById(appoinmentId)==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400, "Hủy không thành công", "Không tồn tại lịch khám này")
             );
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400, "Hủy không thành công", "Không tồn tại lịch khám này")
+        appointmentService.cancelAppointment(getAccountId(), appoinmentId);
+        return ResponseEntity.status(HttpStatus.OK).body(
+            new ResponseObject(200, "Đã hủy lịch hẹn", "")
         );
     }
 
