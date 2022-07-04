@@ -13,7 +13,7 @@ import java.util.List;
 public interface DoctorService {
     DoctorResponse findById(long id);
     DoctorResponse findByName(String name);
-    boolean updateInfor(DoctorInformationForm doctorInformationForm) throws ParseException;
+    String updateInfor(DoctorInformationForm doctorInformationForm) throws ParseException;
     boolean register(RegisterFormDoctor registerFormDoctor);
     boolean changeStatusAppointment(long appointmentId,int statusId);
     List<DoctorResponse> listDoctor();
