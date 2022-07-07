@@ -118,6 +118,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>EnCare</finalName>
     </build>
 
 </project>

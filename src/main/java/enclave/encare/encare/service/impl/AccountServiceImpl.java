@@ -45,7 +45,7 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
     // return id of account
     @Override
     public long registerUser(RegisterFormUser registerFormUser) {
-        if (findByPhone(registerFormUser.getPhone())){
+        if (findByPhone("+84"+Long.parseLong(registerFormUser.getPhone().trim()))){
             Account account = new Account();
 
             account.setPhone("+84"+Long.parseLong(registerFormUser.getPhone().trim()));
@@ -80,11 +80,15 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
     // check for existence phone
     @Override
     public boolean findByPhone(String phone) {
-        Account account = accountRepository.findByPhone(phone);
-        if (account == null){
-            return true;
+        try {
+            Account account = accountRepository.findByPhone(phone);
+            if (account == null){
+                return true;
+            }
+            return false;
+        } catch (Exception e){
+            return false;
         }
-        return false;
     }
 
     @Override
