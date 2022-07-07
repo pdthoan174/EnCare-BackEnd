@@ -6,6 +6,7 @@ import enclave.encare.encare.form.*;
 import enclave.encare.encare.jwt.JwtTokenProvider;
 import enclave.encare.encare.model.Account;
 import enclave.encare.encare.model.ResponseObject;
+import enclave.encare.encare.modelResponse.AppointmentResponse;
 import enclave.encare.encare.modelResponse.CategoryResponse;
 import enclave.encare.encare.modelResponse.LoginResponse;
 import enclave.encare.encare.modelResponse.RegisterResponse;
@@ -39,6 +40,9 @@ public class HomeController {
     UserService userService;
 
     @Autowired
+    AccountService accountService;
+
+    @Autowired
     CategoryService categoryService;
 
     @Autowired
@@ -53,6 +57,9 @@ public class HomeController {
     @Autowired
     MapboxService mapboxService;
 
+    @Autowired
+    SmsService smsService;
+
     @PostMapping("/login")
     public ResponseEntity<ResponseObject> login(@Valid @RequestBody LoginForm loginForm){
 
@@ -64,7 +71,8 @@ public class HomeController {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginForm.getPhone(),loginForm.getPassword()
+                        "+84"+Long.parseLong(loginForm.getPhone()),
+                        loginForm.getPassword()
                 )
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -168,16 +176,33 @@ public class HomeController {
         );
     }
 
-    @GetMapping("/check")
-    public ResponseEntity<ResponseObject> check(){
-        CategoryResponse categoryResponse = categoryService.findById(6);
-        if (categoryResponse==null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseObject(400, "Category fail", "This category does not exist")
+    @GetMapping("/appointment")
+    public ResponseEntity<ResponseObject> informationAppointment(@RequestParam(required = true, name = "id", defaultValue = "0") long appointmentId){
+        AppointmentResponse appointmentResponse = appointmentService.findById(appointmentId);
+        System.out.println(appointmentId);
+        if (appointmentResponse!=null){
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(200, "Information Appointment", appointmentResponse)
             );
         }
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200, "infor", categoryResponse)
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ResponseObject(400, "Find fail", "Don't have appointment id")
         );
+    }
+
+    @GetMapping("/check")
+    public ResponseEntity<ResponseObject> check(){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ResponseObject(400, "Find fail", "")
+        );
+    }
+
+    private long getAccountId(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication!=null){
+            String token = jwtTokenProvider.generateToken((CustomUserDetail) authentication.getPrincipal());
+            return jwtTokenProvider.getUserId(token);
+        }
+        return 0;
     }
 }

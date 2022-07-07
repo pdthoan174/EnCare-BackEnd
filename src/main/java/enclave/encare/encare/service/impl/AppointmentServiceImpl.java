@@ -39,8 +39,10 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public AppointmentResponse findById(long id) {
         try{
+            System.out.println("find");
             Appointment appointment = appointmentRepository.findByAppointmentId(id);
             if (appointment!=null){
+                System.out.println("find != null");
                 return transformData(appointment);
             }
             return null;

@@ -1,10 +1,7 @@
 package enclave.encare.encare.service.impl;
 
 import enclave.encare.encare.config.TimeConfig;
-import enclave.encare.encare.form.InformationForm;
-import enclave.encare.encare.form.NewPasswordForm;
-import enclave.encare.encare.form.RegisterFormDoctor;
-import enclave.encare.encare.form.RegisterFormUser;
+import enclave.encare.encare.form.*;
 import enclave.encare.encare.model.Account;
 import enclave.encare.encare.modelResponse.AccountResponse;
 import enclave.encare.encare.repository.AccountRepository;
@@ -51,7 +48,7 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
         if (findByPhone(registerFormUser.getPhone())){
             Account account = new Account();
 
-            account.setPhone(registerFormUser.getPhone().trim());
+            account.setPhone("+84"+Long.parseLong(registerFormUser.getPhone().trim()));
             account.setPassword(passwordEncoder.encode(registerFormUser.getPassword()));
             account.setRole("PATIENT");
             account.setName(registerFormUser.getName().trim());
@@ -67,7 +64,7 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
         if (findByPhone(registerFormDoctor.getPhone())){
             Account account = new Account();
 
-            account.setPhone(registerFormDoctor.getPhone());
+            account.setPhone("+84"+Long.parseLong(registerFormDoctor.getPhone().trim()));
             account.setPassword(passwordEncoder.encode(registerFormDoctor.getPassword()));
             account.setRole("DOCTOR");
             account.setName(registerFormDoctor.getName().trim());
@@ -128,6 +125,50 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void newOTP(String phone, String otp) {
+        try {
+            Account account = accountRepository.findByPhone(phone);
+            if (account!=null){
+                account.setOtpCode(otp);
+                accountRepository.save(account);
+            }
+        } catch (Exception e){
+        }
+    }
+
+    @Override
+    public boolean confirmOTP(OTPForm otpForm) {
+        try {
+            Account account = accountRepository.findByPhone(otpForm.getPhone());
+            if (account!=null){
+                return otpForm.getOtp().equals(account.getOtpCode());
+            }
+            return false;
+        } catch (Exception e){
+            return false;
+        }
+    }
+
+    @Override
+    public boolean newPassowrd(NewPasswordFormForget newPasswordFormForget) {
+        try {
+            Account account = accountRepository.findByPhone(newPasswordFormForget.getPhone());
+            if (account!=null){
+                if (newPasswordFormForget.getOtp().equals(account.getOtpCode())){
+                    account.setOtpCode(null);
+                    account.setPassword(passwordEncoder.encode(newPasswordFormForget.getPassword()));
+                    accountRepository.save(account);
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        } catch (Exception e){
+            return false;
+        }
     }
 
     private boolean checkPass(String oldPass, long accountId){
