@@ -101,7 +101,7 @@ public class HomeController {
         if (userService.register(registerFormUser)){
             RegisterResponse registerResponse = new RegisterResponse(
                     registerFormUser.getName(),
-                    registerFormUser.getPhone(),
+                    "+84"+Long.parseLong(registerFormUser.getPhone().trim()),
                     passwordEncoder.encode(registerFormUser.getPassword())
             );
 
