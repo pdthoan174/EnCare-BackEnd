@@ -71,7 +71,7 @@ public class HomeController {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        "+84"+Long.parseLong(loginForm.getPhone()),
+                        "+84"+Long.parseLong(loginForm.getPhone().trim()),
                         loginForm.getPassword()
                 )
         );
