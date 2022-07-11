@@ -23,3 +23,8 @@ spring:
       file-size-threshold: 2MB
       max-file-size: 5MB
       max-request-size: 10MB
+
+twilio:
+  account_sid: AC914bef40cbbb437f8bee775b4109ec6e
+  auth_token: 1e321632ddf4fddcb84ee12772d4465c
+  trial_phone: +16815324305

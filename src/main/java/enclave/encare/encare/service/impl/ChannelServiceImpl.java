@@ -24,7 +24,15 @@ public class ChannelServiceImpl implements ChannelService {
 
     @Override
     public ChannelResponse findById(long id) {
-        return transformData(channelRepository.findByChannelId(id));
+        try {
+            Channel channel = channelRepository.findByChannelId(id);
+            if (channel!=null){
+                return transformData(channel);
+            }
+            return null;
+        }catch (Exception e){
+            return null;
+        }
     }
 
     @Override

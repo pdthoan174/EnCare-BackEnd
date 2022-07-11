@@ -32,7 +32,15 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public MessageResponse findById(long id) {
-        return transformData(messageRepository.findByMessageId(id));
+        try {
+            Message message = messageRepository.findByMessageId(id);
+            if (message!=null){
+                return transformData(messageRepository.findByMessageId(id));
+            }
+            return null;
+        } catch (Exception e){
+            return null;
+        }
     }
 
     @Override

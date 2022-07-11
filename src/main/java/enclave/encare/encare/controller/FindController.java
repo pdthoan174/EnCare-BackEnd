@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/find")
+@RequestMapping("/api/find")
 public class FindController {
     @Autowired
     UserService userService;
@@ -33,11 +33,11 @@ public class FindController {
         DoctorResponse doctorResponse = doctorService.findById(doctorId);
         if (doctorResponse==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseObject(400,"Không tồn tại bác sĩ này", "")
+                    new ResponseObject(400,"This doctor does not exist", "")
             );
         }
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200,"Thông tin bác sĩ", doctorResponse)
+                new ResponseObject(200,"Information of doctor", doctorResponse)
         );
     }
 
@@ -47,7 +47,7 @@ public class FindController {
             @RequestParam(required = false, name = "page", defaultValue = "0") int page){
 
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200, "Danh sách bác sĩ theo tên", doctorService.findLikeName(name, page))
+                new ResponseObject(200, "List doctor by name", doctorService.findLikeName(name, page))
         );
     }
 
@@ -56,11 +56,11 @@ public class FindController {
         HospitalResponse hospitalResponse = hospitalService.findById(hospitalId);
         if (hospitalResponse==null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseObject(400, "Không tồn tại bệnh viện này", "")
+                    new ResponseObject(400, "This hospital does not exist", "")
             );
         }
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200, "Thông tin bệnh viện", hospitalResponse)
+                new ResponseObject(200, "Information of hospital", hospitalResponse)
         );
     }
 

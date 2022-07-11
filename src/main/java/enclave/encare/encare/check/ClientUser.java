@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 public class ClientUser {
     public static void main(String[] args) throws Exception {
-        long accountUserId = 1;
+        long accountUserId = 44;
         long channelId = 1;
 
         Scanner scanner = new Scanner(System.in);
@@ -22,7 +22,8 @@ public class ClientUser {
 
         ClientSessionHandler clientSessionHandler = new ClientSessionHandler();
         ListenableFuture<StompSession> listenableFuture = stompClient.connect(
-                "ws://localhost:8080/ws",clientSessionHandler
+                "ws://enclave-encare.herokuapp.com/ws",clientSessionHandler
+//                "ws://54.251.162.16/ws",clientSessionHandler
         );
         StompSession session = listenableFuture.get();
         session.subscribe("/topic/messages/"+accountUserId,clientSessionHandler);
@@ -32,5 +33,7 @@ public class ClientUser {
             String text = scanner.nextLine();
             session.send("/app/chat", new MessageForm(channelId, accountUserId, text));
         }
+
+
     }
 }

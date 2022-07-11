@@ -3,16 +3,23 @@ package enclave.encare.encare.form;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ImageForm {
+public class NewPasswordForm {
     private long accountId;
-    private MultipartFile file;
+    @NotNull
+    @NotBlank
+    @Size(min = 8)
+    private String oldPassword;
+    @NotNull
+    @NotBlank
+    @Size(min = 8)
+    private String newPassword;
 }

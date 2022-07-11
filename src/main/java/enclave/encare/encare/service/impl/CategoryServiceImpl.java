@@ -19,7 +19,15 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponse findById(long id) {
-        return transformData(categoryRepository.findByCategoryId(id));
+        try {
+            Category category = categoryRepository.findByCategoryId(id);
+            if (category!=null){
+                return transformData(categoryRepository.findByCategoryId(id));
+            }
+            return null;
+        } catch (Exception e){
+            return null;
+        }
     }
 
     @Override

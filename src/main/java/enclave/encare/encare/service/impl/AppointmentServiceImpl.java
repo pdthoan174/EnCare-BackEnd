@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
@@ -37,7 +38,17 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public AppointmentResponse findById(long id) {
-        return transformData(appointmentRepository.findByAppointmentId(id));
+        try{
+            System.out.println("find");
+            Appointment appointment = appointmentRepository.findByAppointmentId(id);
+            if (appointment!=null){
+                System.out.println("find != null");
+                return transformData(appointment);
+            }
+            return null;
+        } catch (Exception e){
+            return null;
+        }
     }
 
     @Override
@@ -56,9 +67,9 @@ public class AppointmentServiceImpl implements AppointmentService {
             appointment.setDoctor(doctor);
             appointment.setTime(time);
             appointment.setDay(day);
-            appointment.setDescription(appointmentForm.getDescription());
+//            appointment.setDescription(appointmentForm.getDescription().trim());
             appointment.setStatus(status);
-            appointment.setSymptoms(appointmentForm.getSymptomps());
+            appointment.setSymptoms(appointmentForm.getSymptomps().trim());
             appointment.setCreateDate(new Date());
 
             appointmentRepository.save(appointment);
@@ -88,7 +99,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         boolean check = true;
         List<Appointment> appointmentList = appointmentRepository.findByDoctorAndDay(doctor, date);
         List<Integer> list = new ArrayList<Integer>();
-        for (int i = 8; i<=11; i++){
+        for (int i = 7; i<=11; i++){
             check = true;
             for (int j=0; j<appointmentList.size(); j++){
                 if (i == appointmentList.get(j).getTime()){
@@ -100,7 +111,7 @@ public class AppointmentServiceImpl implements AppointmentService {
                 list.add(i);
             }
         }
-        for (int i = 13; i<=17; i++){
+        for (int i = 13; i<=16; i++){
             check = true;
             for (int j=0; j<appointmentList.size(); j++){
                 if (i == appointmentList.get(j).getTime()){

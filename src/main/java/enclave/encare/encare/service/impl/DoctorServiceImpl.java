@@ -43,11 +43,15 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public DoctorResponse findById(long id) {
-        Doctor doctor = doctorRepository.findByDoctorId(id);
-        if (doctor == null){
+        try {
+            Doctor doctor = doctorRepository.findByDoctorId(id);
+            if (doctor != null){
+                return transformData(doctor);
+            }
+            return null;
+        } catch (Exception e){
             return null;
         }
-        return transformData(doctor);
     }
 
     @Override

@@ -23,7 +23,7 @@ public class StorageService {
         File file = convertMultipartFileToFile(files);
         String fileName = System.currentTimeMillis()+"";
         s3Client.putObject(new PutObjectRequest(bucketName,fileName, file));
-        return fileName;
+        return s3Client.getUrl(bucketName, fileName)+"";
     }
 
     private File convertMultipartFileToFile(MultipartFile file){
