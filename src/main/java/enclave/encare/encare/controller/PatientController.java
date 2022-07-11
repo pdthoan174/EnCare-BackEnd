@@ -37,14 +37,7 @@ public class PatientController {
     @Autowired
     DoctorService doctorService;
 
-    @PostMapping("/update")
-    public ResponseEntity<ResponseObject> update(@Valid @RequestBody InformationForm informationForm){
-        informationForm.setAccountId(getAccountId());
-        accountService.updateInformation(informationForm);
-        return ResponseEntity.status(HttpStatus.OK).body(
-            new ResponseObject(200, "Update Information success", "")
-        );
-    }
+
 
     @PostMapping("/newAppointment")
     public ResponseEntity<ResponseObject> newAppointment(@Valid @RequestBody AppointmentForm appointmentForm){

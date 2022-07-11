@@ -17,12 +17,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Value("${cloud.aws.region.static}")
-    private String region;
-
-    @Value("${application.bucket.name}")
-    private String bucketName;
-
     @Autowired
     StorageService storageService;
 
@@ -71,9 +65,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void uploadAvatar(ImageForm imageForm) {
-        String avatar ="https://"+bucketName+".s3."+region+".amazonaws.com/"+storageService.uploadFile(imageForm.getFile());
         Account account = accountRepository.findByAccountId(imageForm.getAccountId());
-        account.setAvatar(avatar);
+        account.setAvatar(storageService.uploadFile(imageForm.getFile()));
         accountRepository.save(account);
     }
 

@@ -67,7 +67,7 @@ public class AppointmentServiceImpl implements AppointmentService {
             appointment.setDoctor(doctor);
             appointment.setTime(time);
             appointment.setDay(day);
-            appointment.setDescription(appointmentForm.getDescription().trim());
+//            appointment.setDescription(appointmentForm.getDescription().trim());
             appointment.setStatus(status);
             appointment.setSymptoms(appointmentForm.getSymptomps().trim());
             appointment.setCreateDate(new Date());

@@ -22,8 +22,8 @@ public class ClientUser {
 
         ClientSessionHandler clientSessionHandler = new ClientSessionHandler();
         ListenableFuture<StompSession> listenableFuture = stompClient.connect(
-//                "ws://enclave-encare.herokuapp.com/ws",clientSessionHandler
-                "ws://3.0.147.104/ws",clientSessionHandler
+                "ws://enclave-encare.herokuapp.com/ws",clientSessionHandler
+//                "ws://54.251.162.16/ws",clientSessionHandler
         );
         StompSession session = listenableFuture.get();
         session.subscribe("/topic/messages/"+accountUserId,clientSessionHandler);
@@ -33,5 +33,7 @@ public class ClientUser {
             String text = scanner.nextLine();
             session.send("/app/chat", new MessageForm(channelId, accountUserId, text));
         }
+
+
     }
 }

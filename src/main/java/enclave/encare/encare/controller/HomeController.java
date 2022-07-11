@@ -142,6 +142,15 @@ public class HomeController {
         );
     }
 
+    @PostMapping("/update")
+    public ResponseEntity<ResponseObject> update(@Valid @RequestBody InformationForm informationForm){
+        informationForm.setAccountId(getAccountId());
+        accountService.updateInformation(informationForm);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(200, "Update Information success", "")
+        );
+    }
+
     @GetMapping("/listCategory")
     public ResponseEntity<ResponseObject> listCategory(){
         return ResponseEntity.status(HttpStatus.OK).body(
