@@ -126,7 +126,7 @@ public class HomeController {
                     new ResponseObject(400,"Register fail", "Name is not in the correct format")
             );
         }
-        if (TimeConfig.getDate(registerFormDoctor.getBirthDay())==null){
+        if (!registerFormDoctor.getBirthDay().matches(RegexConfig.day)){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     new ResponseObject(400,"Register fail", "Birthday is not in the correct format")
             );
@@ -144,6 +144,13 @@ public class HomeController {
 
     @PostMapping("/update")
     public ResponseEntity<ResponseObject> update(@Valid @RequestBody InformationForm informationForm){
+
+        if (!informationForm.getBirthDay().matches(RegexConfig.day)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400,"Register fail", "Birthday is not in the correct format")
+            );
+        }
+
         informationForm.setAccountId(getAccountId());
         accountService.updateInformation(informationForm);
         return ResponseEntity.status(HttpStatus.OK).body(
