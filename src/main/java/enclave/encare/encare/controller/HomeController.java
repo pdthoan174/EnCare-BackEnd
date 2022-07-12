@@ -180,6 +180,11 @@ public class HomeController {
 
     @PostMapping("/listFreeTime")
     public ResponseEntity<ResponseObject> listFreeTimeOfDoctor(@Valid @RequestBody FreeTimeForm freeTimeForm){
+        if (!freeTimeForm.getTime().matches(RegexConfig.day)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400, "Day is not correct format", "")
+            );
+        }
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(200, "List free time", appointmentService.listFreeTime(freeTimeForm))
         );

@@ -22,11 +22,12 @@ public class ClientDoctor {
 
         ClientSessionHandler clientSessionHandler = new ClientSessionHandler();
         ListenableFuture<StompSession> listenableFuture = stompClient.connect(
-                "ws://enclave-encare.herokuapp.com/ws",clientSessionHandler
-//                "ws://54.251.162.16/ws",clientSessionHandler
+//                "ws://enclave-encare.herokuapp.com/ws",clientSessionHandler
+                "ws://13.215.200.248/ws",clientSessionHandler
         );
         StompSession session = listenableFuture.get();
         session.subscribe("/topic/messages/"+accountDoctorId,clientSessionHandler);
+//        session.setAutoReceipt(true);
         while (true){
             Thread.sleep(2000);
             System.out.print("Said something: ");
