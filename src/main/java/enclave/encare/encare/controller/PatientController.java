@@ -1,5 +1,7 @@
 package enclave.encare.encare.controller;
 
+import enclave.encare.encare.config.RegexConfig;
+import enclave.encare.encare.config.TimeConfig;
 import enclave.encare.encare.form.*;
 import enclave.encare.encare.jwt.JwtTokenProvider;
 import enclave.encare.encare.model.ResponseObject;
@@ -47,6 +49,12 @@ public class PatientController {
                     new ResponseObject(400, "This doctor does not exist", "")
             );
         }
+        if (!appointmentForm.getDay().matches(RegexConfig.day)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400, "Day is not correct format", "")
+            );
+        }
+
         if (appointmentService.newAppointment(appointmentForm)){
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(200, "New appointment success", "")
