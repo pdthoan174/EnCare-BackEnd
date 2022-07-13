@@ -7,10 +7,7 @@ import enclave.encare.encare.model.Appointment;
 import enclave.encare.encare.model.ResponseObject;
 import enclave.encare.encare.model.User;
 import enclave.encare.encare.modelResponse.*;
-import enclave.encare.encare.service.AppointmentService;
-import enclave.encare.encare.service.CategoryService;
-import enclave.encare.encare.service.DoctorService;
-import enclave.encare.encare.service.HospitalService;
+import enclave.encare.encare.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +34,9 @@ public class DoctorController {
     @Autowired
     AppointmentService appointmentService;
 
+    @Autowired
+    StatusService statusService;
+
 
     @GetMapping("/")
     public ResponseEntity<ResponseObject> listDoctor() {
@@ -50,7 +50,7 @@ public class DoctorController {
         );
     }
 
-    @PostMapping("/update")
+    @PutMapping("/")
     public ResponseEntity<ResponseObject> updateDoctor(@RequestBody DoctorInformationForm doctorInformationForm) throws ParseException {
         //handle in updateInfor() :
         String update = doctorService.updateInfor(doctorInformationForm);
@@ -88,28 +88,28 @@ public class DoctorController {
     }
 
     @GetMapping("/doctorName={doctorName}")
-    public ResponseEntity<ResponseObject> doctorById(@PathVariable("doctorName") String doctorName) {
-        DoctorResponse doctorResponse = doctorService.findByName(doctorName);
-        if (doctorResponse == null)
+    public ResponseEntity<ResponseObject> doctorByName(@PathVariable("doctorName") String doctorName) {
+        List<DoctorResponse> doctorResponseList = doctorService.findByName(doctorName);
+        if (doctorResponseList == null || doctorResponseList.size() < 1)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseObject(400, "Doctor detail", "DoctorId is not found !")
+                    new ResponseObject(400, "Doctor is not exist !", null)
             );
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200, "List Category", doctorResponse)
+                new ResponseObject(200, "Doctor by name", doctorResponseList)
         );
     }
 
     @GetMapping("/hospitalId={hospitalId}")
-    public ResponseEntity<ResponseObject> listDoctorByHospitalId(@PathVariable("hospitalId") int hospitalId) {
+    public ResponseEntity<ResponseObject> doctorByHospitalId(@PathVariable("hospitalId") int hospitalId) {
         HospitalResponse hospitalResponse = hospitalService.findById(hospitalId);
         if (hospitalResponse == null)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseObject(400, "List doctor of hospital", "Hospital id invalid !")
+                    new ResponseObject(400, "Hospital is not exist !", null)
             );
         List<DoctorResponse> doctorResponseList = doctorService.listDoctorOfHospital(hospitalId);
-        if (doctorResponseList == null)
+        if (doctorResponseList == null || doctorResponseList.size() < 1)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseObject(400, "List doctor of hospital", "Hospital has not doctor ")
+                    new ResponseObject(200, "Hospital has not doctor ", doctorResponseList)
             );
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(200, "List doctor of hospital", doctorResponseList)
@@ -123,20 +123,19 @@ public class DoctorController {
 //        );
 //    }
     @GetMapping("/categoryId={categoryId}")
-    public ResponseEntity<ResponseObject> listDoctorByCategoryId(@PathVariable("categoryId") int categoryId) {
+    public ResponseEntity<ResponseObject> doctorByCategoryId(@PathVariable("categoryId") int categoryId) {
         CategoryResponse categoryResponse = categoryService.findById(categoryId);
-        String description = "List doctor of category";
         if (categoryResponse == null)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseObject(400, description, "Category invalid")
+                    new ResponseObject(400, "Category is not exist !", null)
             );
         List<DoctorResponse> doctorResponseList = doctorService.listDoctorOfCategory(categoryId);
         if (doctorResponseList == null || doctorResponseList.size() < 1)
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseObject(400, description, "Category has not doctor")
+                    new ResponseObject(200, "Category has not doctor", doctorResponseList)
             );
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200, description, doctorResponseList)
+                new ResponseObject(200, "List doctor of category", doctorResponseList)
         );
     }
 
@@ -151,8 +150,33 @@ public class DoctorController {
 
         List<AppointmentResponse> appointmentResponseList = new ArrayList<>();
         appointmentResponseList = appointmentService.findAll();
+        if (appointmentResponseList == null || appointmentResponseList.size() < 1) {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(400, "Empty appointment list", null)
+            );
+        }
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200, "Appointment by doctorId", appointmentResponseList)
+                new ResponseObject(200, "All appointments", appointmentResponseList)
+        );
+    }
+
+    @GetMapping("/appointment/status={statusId}")
+    public ResponseEntity<ResponseObject> getAppointmentByStatusId(@PathVariable("statusId") long statusId) {
+
+        if (statusService.findById(statusId) == null) {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(200, "Status is not exist !", null)
+            );
+        }
+        List<AppointmentResponse> appointmentResponseList = new ArrayList<>();
+        appointmentResponseList = appointmentService.findByStatusId(statusId);
+        if (appointmentResponseList == null || appointmentResponseList.size() < 1) {
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(200, "Empty appointment list", appointmentResponseList)
+            );
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(200, "Appointment by ststusId", appointmentResponseList)
         );
     }
 
@@ -166,7 +190,7 @@ public class DoctorController {
         }
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400, "No has appointment by appointmentId", null));
+                new ResponseObject(400, "Appointment is not exist !", null));
     }
 
     @GetMapping("/appointment/doctorId={doctorId}")
@@ -175,20 +199,24 @@ public class DoctorController {
         List<AppointmentResponse> appointmentResponseList = new ArrayList<>();
         if (doctorService.findById(doctorId) != null) {
             appointmentResponseList = appointmentService.findByDoctorId(doctorId);
+            if (appointmentResponseList == null || appointmentResponseList.size() < 1)
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        new ResponseObject(200, "Empty appointment list", appointmentResponseList));
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(200, "Appointment by doctorId", appointmentResponseList)
             );
         }
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400, "No has appointment by doctorId", appointmentResponseList));
+                new ResponseObject(400, "Doctor is not exist", null));
     }
+
     @GetMapping("/appointment/phone={phone}")
     public ResponseEntity<ResponseObject> getAppointmentByDoctorId(@PathVariable("phone") String phone) {
         List<AppointmentResponse> appointmentResponseList = new ArrayList<>();
         appointmentResponseList = appointmentService.findByPhone(phone);
 
-        if (appointmentResponseList != null) {
+        if (appointmentResponseList != null || appointmentResponseList.size() > 0) {
 
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(200, "Appointment by phone", appointmentResponseList)
@@ -196,7 +224,7 @@ public class DoctorController {
         }
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400, "No has appointment by doctorId", appointmentResponseList));
+                new ResponseObject(400, "This phone is not have appointment", null));
     }
 
     @GetMapping("/appointment/hospitalId={hospitalId}")
@@ -205,13 +233,18 @@ public class DoctorController {
         List<AppointmentResponse> appointmentResponseList = new ArrayList<>();
         if (hospitalService.findById(hospitalId) != null) {
             appointmentResponseList = appointmentService.findByHospitalId(hospitalId);
+            if (appointmentResponseList.size() < 1) {
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        new ResponseObject(200, "Empty appointment list", appointmentResponseList)
+                );
+            }
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(200, "Appointment by hospitalId", appointmentResponseList)
             );
         }
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400, "No has appointment by hospitalId", appointmentResponseList));
+                new ResponseObject(400, "Hospital is not exist", null));
     }
 
 
@@ -219,83 +252,112 @@ public class DoctorController {
     public ResponseEntity<ResponseObject> confirmAppointment(@PathVariable("appointmentId") long appointmentId) throws ParseException {
 
         AppointmentResponse appointmentResponse = appointmentService.findById(appointmentId);
+        if (appointmentResponse == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400, "Appointment is not exist", null));
         boolean confirm = false;
         boolean isExistTime = false;
-        if (appointmentResponse != null && appointmentResponse.getStatusResponse().getStatusId() == 2) {
+        if (appointmentResponse.getStatusResponse().getStatusId() == 2) {
             isExistTime = appointmentService.isExistTime(appointmentId);
-            if (isExistTime){
+            if (isExistTime) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                        new ResponseObject(400, "Confirm appointment", "Time is invalid"));
+                        new ResponseObject(400, "Time is exist", null));
             }
             confirm = doctorService.changeStatusAppointment(appointmentId, 3);
         }
         if (confirm) {
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject(200, "Confirm appointment", "Success")
-            );
+            {
+                AppointmentResponse appointmentResponseConfirm = appointmentService.findById(appointmentId);
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        new ResponseObject(200, "Confirm success", appointmentResponseConfirm)
+                );
+            }
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400, "Confirm appointment", "Failed"));
+                new ResponseObject(400, "Appointment must be in state pending", null));
     }
 
     @GetMapping("/cancel/appointmentId={appointmentId}")
     public ResponseEntity<ResponseObject> cancelAppointment(@PathVariable("appointmentId") long appointmentId) {
         AppointmentResponse appointmentResponse = appointmentService.findById(appointmentId);
         boolean confirm = false;
-        if (appointmentResponse != null && appointmentResponse.getStatusResponse().getStatusId() < 3) {
+        if (appointmentResponse == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400, "Appointment is not exist", null));
+        }
+        if (appointmentResponse.getStatusResponse().getStatusId() < 3) {
             confirm = doctorService.changeStatusAppointment(appointmentId, 1);
         }
-        if (confirm)
+
+        if (confirm) {
+            AppointmentResponse appointmentResponseConfirm = appointmentService.findById(appointmentId);
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject(200, "Cancel appointment", "Success")
+                    new ResponseObject(200, "Cancel is success", appointmentResponseConfirm)
             );
+        }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400, "Cancel appointment", "Failed"));
+                new ResponseObject(400, "Appointment is confirmed", null));
     }
 
     @GetMapping("/done/appointmentId={appointmentId}")
     public ResponseEntity<ResponseObject> doneAppointment(@PathVariable("appointmentId") long appointmentId) {
         AppointmentResponse appointmentResponse = appointmentService.findById(appointmentId);
         boolean confirm = false;
-        if (appointmentResponse != null && appointmentResponse.getStatusResponse().getStatusId() > 2) {
+        if (appointmentResponse == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400, "Appointment is not exist", null));
+        }
+        if (appointmentResponse.getStatusResponse().getStatusId() > 2) {
             confirm = doctorService.changeStatusAppointment(appointmentId, 4);
         }
-        if (confirm)
+        if (confirm) {
+            AppointmentResponse appointmentResponseConfirm = appointmentService.findById(appointmentId);
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject(200, "Cancel appointment", "Success")
+                    new ResponseObject(200, "Done is success", appointmentResponseConfirm)
             );
+        }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400, "Cancel appointment", "Failed"));
+                new ResponseObject(400, "Appointment must be confirm", null));
     }
 
     @GetMapping("/re-examination/appointmentId={appointmentId}")
     public ResponseEntity<ResponseObject> reExaminationAppointment(@PathVariable("appointmentId") long appointmentId) {
         AppointmentResponse appointmentResponse = appointmentService.findById(appointmentId);
         boolean confirm = false;
-        if (appointmentResponse != null && appointmentResponse.getStatusResponse().getStatusId() > 3) {
+        if (appointmentResponse == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400, "Appointment is not exist", null));
+        }
+        if (appointmentResponse.getStatusResponse().getStatusId() > 3) {
             confirm = doctorService.changeStatusAppointment(appointmentId, 5);
         }
-        if (confirm)
+        if (confirm) {
+            AppointmentResponse appointmentResponseConfirm = appointmentService.findById(appointmentId);
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject(200, "Re-examination appointment", "Success")
+                    new ResponseObject(200, "Re-examination is success", appointmentResponseConfirm)
             );
+        }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400, "Re-examination appointment", "Failed"));
+                new ResponseObject(400, "Appointment must be done before", null));
     }
 
-    @PostMapping("/descriptionAppointment")
+    @PutMapping("/descriptionAppointment")
     public ResponseEntity<ResponseObject> descriptionAppointment(@RequestBody DescriptionAppointmentForm descriptionAppointmentForm) {
         AppointmentResponse appointmentResponse = appointmentService.findById(descriptionAppointmentForm.getId());
-        boolean confirm = false;
-        if (appointmentResponse != null ) {
-            confirm = appointmentService.setDescription(descriptionAppointmentForm.getId(), descriptionAppointmentForm.getDescription());
-        }
-        if (confirm)
+        String confirm = "";
+        if (appointmentResponse == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400, "Appointment is not exist !", null));
+        confirm = appointmentService.setDescription(descriptionAppointmentForm.getId(), descriptionAppointmentForm.getDescription());
+
+        if (confirm.equals("Success")) {
+            AppointmentResponse appointmentResponseUpdated = appointmentService.findById(appointmentResponse.getAppointmentId());
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ResponseObject(200, "Set description for appointment", "Success")
+                    new ResponseObject(200, "Set description is Success", appointmentResponseUpdated)
             );
+        }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400, "Set description for appointment", "Failed"));
+                new ResponseObject(400, confirm, null));
     }
 
 
