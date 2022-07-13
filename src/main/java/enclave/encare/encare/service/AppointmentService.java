@@ -8,13 +8,24 @@ import java.util.List;
 
 public interface AppointmentService {
     List<AppointmentResponse> findAll();
+
     AppointmentResponse findById(long id);
+
     List<AppointmentResponse> findByPhone(String phone);
+
+    List<AppointmentResponse> findByStatus(Long statusId);
+
     boolean newAppointment(AppointmentForm appointmentForm);
-    boolean setDescription(long id,String description);
-    boolean isExistTime(int time, Date date,long appointmentId);
+
+    String setDescription(long id, String description);
+
+    boolean isExistTime(int time, Date date, long appointmentId);
+
     boolean isExistTime(long appointmentId);
+
     List<AppointmentResponse> findByDoctorId(long doctorId);
+
     List<AppointmentResponse> findByHospitalId(long hospitalId);
+
     List<AppointmentResponse> findByStatusId(long statusId);
 }
