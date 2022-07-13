@@ -55,7 +55,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public List<AppointmentResponse> findByStatusId(long statusId) {
         List<Appointment> appointmentList = appointmentRepository.findByStatusStatusId(statusId);
-        if (appointmentList==null) return  null;
+        if (appointmentList == null) return null;
 
         return transformData(appointmentList);
     }
@@ -63,7 +63,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public AppointmentResponse findById(long id) {
         Appointment appointment = appointmentRepository.findByAppointmentId(id);
-        if (appointment==null) return  null;
+        if (appointment == null) return null;
 
         return transformData(appointment);
     }
@@ -73,9 +73,14 @@ public class AppointmentServiceImpl implements AppointmentService {
 //        List<Appointment> appointmentList = appointmentRepository.findAll()
 //                .stream().filter(appointment -> appointment.getUser().getAccount().getPhone().contains(phone)).collect(Collectors.toList());
         List<Appointment> appointmentList = appointmentRepository.findByUser_Account_PhoneContains(phone);
-        if (appointmentList==null) return  null;
+        if (appointmentList == null) return null;
 
         return transformData(appointmentList);
+    }
+
+    @Override
+    public List<AppointmentResponse> findByStatus(Long statusId) {
+        return null;
     }
 
     @Override
@@ -83,7 +88,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         Date day = TimeConfig.getDate(appointmentForm.getDay());
         int time = appointmentForm.getTime();
-        if (findTimeAndDay(time, day)){
+        if (findTimeAndDay(time, day)) {
             User user = new User(appointmentForm.getUserId());
             Doctor doctor = new Doctor(appointmentForm.getDoctorId());
             Status status = new Status(1); // Đang chờ xác nhận
@@ -104,37 +109,37 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public boolean setDescription(long id, String description) {
+    public String setDescription(long id, String description) {
         Appointment appointment = appointmentRepository.findByAppointmentId(id);
-        if (appointment!=null && (appointment.getStatus().getStatusId()==3 || appointment.getStatus().getStatusId()==5))
-        {
+        if (appointment == null)
+            return "Appointment is not exist !";
+        else if (appointment.getStatus().getStatusId()>3) {
             appointment.setDescription(description);
             appointmentRepository.save(appointment);
-            return true;
+            return "Success";
         }
-        return false;
+        return "Appointment must be in confirmed status";
     }
 
     @Override
-    public boolean isExistTime(int time, Date date,long appointmentId) {
+    public boolean isExistTime(int time, Date date, long appointmentId) {
         List<Appointment> appointmentList = appointmentRepository.findAll();
 //        appointmentList.removeIf(appointment -> {
 //            long statusId = appointment.getStatus().getStatusId();
 //            return  statusId!=5 || statusId!=1 ;
 //        });
-        if (appointmentList==null)
+        if (appointmentList == null)
             return false;
         DoctorResponse doctorResponse = doctorService.findById(appointmentId);
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        for (Appointment appointment : appointmentList)
-        {
-            if (appointment.getAppointmentId()==appointmentId)
+        for (Appointment appointment : appointmentList) {
+            if (appointment.getAppointmentId() == appointmentId)
                 continue;
             if (formatter.format(appointment.getDay()).equals(formatter.format(date))
-                    && appointment.getTime()==time
-                    && (appointment.getStatus().getStatusId()>1 && appointment.getStatus().getStatusId() <5)
-                    && appointment.getAppointmentId()!=appointmentId
-                    && appointment.getDoctor().getDoctorId() == doctorResponse.getDoctorId()){
+                    && appointment.getTime() == time
+                    && (appointment.getStatus().getStatusId() > 1 && appointment.getStatus().getStatusId() < 5)
+                    && appointment.getAppointmentId() != appointmentId
+                    && appointment.getDoctor().getDoctorId() == doctorResponse.getDoctorId()) {
                 return true;
             }
         }
@@ -144,15 +149,15 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public boolean isExistTime(long appointmentId) {
         Appointment appointment = appointmentRepository.findByAppointmentId(appointmentId);
-        if (appointment==null ) return true;
+        if (appointment == null) return true;
         List<Appointment> appointmentList = appointmentRepository.findByDoctorDoctorId(appointment.getDoctor().getDoctorId());
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        for (Appointment a: appointmentList){
-            if (a.getAppointmentId()!=appointmentId
+        for (Appointment a : appointmentList) {
+            if (a.getAppointmentId() != appointmentId
                     && a.getTime() == appointment.getTime()
                     && formatter.format(a.getDay()).equals(formatter.format(appointment.getDay()))
-                    && (a.getStatus().getStatusId()>1 && a.getStatus().getStatusId()<5)){
-            return true;
+                    && (a.getStatus().getStatusId() > 1 && a.getStatus().getStatusId() < 5)) {
+                return true;
             }
         }
 
@@ -163,22 +168,22 @@ public class AppointmentServiceImpl implements AppointmentService {
     public List<AppointmentResponse> findByDoctorId(long doctorId) {
         List<AppointmentResponse> appointmentResponseList = new ArrayList<>();
         List<Appointment> appointmentList = appointmentRepository.findByDoctorDoctorId(doctorId);
-        if (appointmentList != null){
+        if (appointmentList != null) {
             appointmentResponseList = transformData(appointmentList);
         }
         return appointmentResponseList;
     }
 
-    public boolean findTimeAndDay(int time, Date date){
+    public boolean findTimeAndDay(int time, Date date) {
 //        Appointment appointment = appointmentRepository.findByTimeAndDay(time, date);
         List<Appointment> appointment = appointmentRepository.findByTimeAndDayEquals(time, date);
-        if (appointment.size() > 0){
+        if (appointment.size() > 0) {
             return false;
         }
         return true;
     }
 
-    private AppointmentResponse transformData(Appointment appointment){
+    private AppointmentResponse transformData(Appointment appointment) {
         AppointmentResponse appointmentResponse = new AppointmentResponse();
 
         appointmentResponse.setAppointmentId(appointment.getAppointmentId());
@@ -193,10 +198,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         return appointmentResponse;
     }
-    private List<AppointmentResponse> transformData(List<Appointment> appointmentList){
+
+    private List<AppointmentResponse> transformData(List<Appointment> appointmentList) {
 
         List<AppointmentResponse> appointmentResponseList = new ArrayList<>();
-        for (Appointment appointment: appointmentList){
+        for (Appointment appointment : appointmentList) {
             appointmentResponseList.add(transformData(appointment));
         }
         return appointmentResponseList;

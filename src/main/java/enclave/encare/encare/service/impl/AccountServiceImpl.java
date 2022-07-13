@@ -30,7 +30,7 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String phone) throws UsernameNotFoundException {
         Account account = accountRepository.findAccountByPhone(phone);
-        if (account==null){
+        if (account == null) {
             throw new UsernameNotFoundException(phone);
         }
         return new CustomUserDetail(account);
@@ -46,13 +46,14 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
     // return id of account
     @Override
     public long registerUser(RegisterFormUser registerFormUser) {
-        if (findByPhone(registerFormUser.getPhone())){
+        if (findByPhone(registerFormUser.getPhone())) {
             Account account = new Account();
 
             account.setPhone(registerFormUser.getPhone());
             account.setPassword(passwordEncoder.encode(registerFormUser.getPassword()));
             account.setRole("USER");
             account.setName(registerFormUser.getName());
+            account.setBirthday(TimeConfig.getDate(registerFormUser.getBirthDay()));
             account.setCreateDate(new Date());
 
             return accountRepository.save(account).getAccountId();
@@ -62,7 +63,7 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
 
     @Override
     public long registerDoctor(RegisterFormDoctor registerFormDoctor) {
-        if (findByPhone(registerFormDoctor.getPhone())){
+        if (findByPhone(registerFormDoctor.getPhone())) {
             Account account = new Account();
 
             account.setPhone(registerFormDoctor.getPhone());
@@ -82,7 +83,7 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
     @Override
     public boolean findByPhone(String phone) {
         Account account = accountRepository.findByPhone(phone);
-        if (account == null){
+        if (account == null) {
             return true;
         }
         return false;
@@ -107,7 +108,7 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
         return transformData(accountRepository.findByAccountId(accountId));
     }
 
-    private AccountResponse transformData(Account account){
+    private AccountResponse transformData(Account account) {
         AccountResponse accountResponse = new AccountResponse();
 
         accountResponse.setAccountId(account.getAccountId());
