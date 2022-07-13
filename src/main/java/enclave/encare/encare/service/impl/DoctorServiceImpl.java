@@ -64,11 +64,11 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public DoctorResponse findByName(String name) {
-        Doctor doctor = doctorRepository.findByAccount_Name(name);
-        if (doctor == null)
+    public List<DoctorResponse> findByName(String name) {
+        List<Doctor> doctorList = doctorRepository.findByAccount_Name(name);
+        if (doctorList == null)
             return null;
-        return transformData(doctor);
+        return transformData(doctorList);
     }
 
     @Override
@@ -78,9 +78,9 @@ public class DoctorServiceImpl implements DoctorService {
         String result = "";
         if (current != null) {
             Account currentAccount = current.getAccount();
-            Pattern name_pattern = Pattern.compile("^[a-zA-Z\\\\s]+");
+            Pattern name_pattern = Pattern.compile("^[a-zA-Z]{2,}(?: [a-zA-Z]{2,}+){1,}$");
             String name = doctorInformationForm.getName();
-            if ((name == null || name.length() <1) || !name_pattern.matcher(name).matches()) {
+            if ((name == null || name.length() < 1) || !name_pattern.matcher(name).matches()) {
                 return "Invalid field name.";
             }
             currentAccount.setName(name);
@@ -103,7 +103,7 @@ public class DoctorServiceImpl implements DoctorService {
             if (phone == null || !phone_pattern.matcher(phone).matches()) {
                 return "Invalid field phone.";
             }
-            if (!accountService.findByPhone(phone) && !phone.equals(currentAccount.getPhone())){
+            if (!accountService.findByPhone(phone) && !phone.equals(currentAccount.getPhone())) {
                 return "Phone is exist !";
             }
             currentAccount.setPhone(phone);
