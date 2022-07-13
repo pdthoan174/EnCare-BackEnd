@@ -10,10 +10,17 @@ import java.util.List;
 
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     Doctor findByDoctorId(long id);
-    Doctor findByAccount_Name(String name);
+
+    @Query("SELECT d from Doctor d WHERE d.account.name like %?1% ")
+    List<Doctor> findByAccount_Name(String name);
+
     List<Doctor> findAllByAccountExistsOrderByDoctorIdDesc(Pageable pageable);
+
     List<Doctor> findDoctorByHospitalOrderByRatingDesc(Hospital hospital);
-    List<Doctor> findDoctorByHospitalOrderByRatingDesc(Hospital hospital,Pageable pageable);
+
+    List<Doctor> findDoctorByHospitalOrderByRatingDesc(Hospital hospital, Pageable pageable);
+
     List<Doctor> findDoctorByCategoryOrderByRatingDesc(Category category);
+
     List<Doctor> findDoctorByCategoryOrderByRatingDesc(Category category, Pageable pageable);
 }
