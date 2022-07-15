@@ -22,18 +22,17 @@ public class ClientUser {
         long channelId = 1;
 
         Scanner scanner = new Scanner(System.in);
+
 //        WebSocketClient client = new StandardWebSocketClient();
 //        WebSocketStompClient stompClient = new WebSocketStompClient(client);
 
         List<Transport> transports = new ArrayList<>(2);
         transports.add(new WebSocketTransport(new StandardWebSocketClient()));
         transports.add(new RestTemplateXhrTransport());
-
         SockJsClient sockjsClient = new SockJsClient(transports);
         WebSocketStompClient stompClient = new WebSocketStompClient(sockjsClient);
 
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
-
         ClientSessionHandler clientSessionHandler = new ClientSessionHandler();
         ListenableFuture<StompSession> listenableFuture = stompClient.connect(
 //                "ws://enclave-encare.herokuapp.com/ws",clientSessionHandler
