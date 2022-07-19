@@ -141,6 +141,17 @@ public class AppointmentServiceImpl implements AppointmentService {
         return true;
     }
 
+    @Override
+    public List<AppointmentResponse> findAll() {
+        List<Appointment> appointmentList = appointmentRepository.findAll();
+        List<AppointmentResponse> appointmentResponseList = new ArrayList<AppointmentResponse>();
+        for (Appointment appointment:appointmentList){
+            AppointmentResponse appointmentResponse = transformData(appointment);
+            appointmentResponseList.add(appointmentResponse);
+        }
+        return appointmentResponseList;
+    }
+
     public boolean findTimeAndDay(long doctorId, int time, Date date){
 //        Appointment appointment = appointmentRepository.findByTimeAndDay(time, date);
         Doctor doctor = new Doctor(doctorId);

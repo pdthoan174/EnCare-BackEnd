@@ -219,7 +219,7 @@ public class HomeController {
     @GetMapping("/check")
     public ResponseEntity<ResponseObject> check(){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400, "Find fail", "")
+                new ResponseObject(400, "Find fail", appointmentService.findAll())
         );
     }
 

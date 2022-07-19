@@ -1,11 +1,9 @@
 package enclave.encare.encare.controller;
 
 import enclave.encare.encare.config.RegexConfig;
-import enclave.encare.encare.config.TimeConfig;
 import enclave.encare.encare.form.*;
 import enclave.encare.encare.jwt.JwtTokenProvider;
 import enclave.encare.encare.model.ResponseObject;
-import enclave.encare.encare.modelResponse.AppointmentResponse;
 import enclave.encare.encare.service.*;
 import enclave.encare.encare.until.CustomUserDetail;
 import org.springframework.beans.factory.annotation.Autowired;

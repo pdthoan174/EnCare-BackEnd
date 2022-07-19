@@ -12,4 +12,5 @@ public interface AppointmentService {
     List<AppointmentResponse> historyAppointmentUser(long userId, int page);
     List<Integer> listFreeTime(FreeTimeForm freeTimeForm);
     boolean cancelAppointment(long accountId, long appointmentId);
+    List<AppointmentResponse> findAll();
 }
