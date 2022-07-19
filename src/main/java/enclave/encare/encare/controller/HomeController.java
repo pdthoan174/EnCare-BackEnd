@@ -144,10 +144,12 @@ public class HomeController {
 
     @PostMapping("/update")
     public ResponseEntity<ResponseObject> update(@Valid @RequestBody InformationForm informationForm){
-        if (!informationForm.getBirthDay().matches(RegexConfig.day)){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new ResponseObject(400,"Update Information fail", "Birthday is not in the correct format")
-            );
+        if (!informationForm.getBirthDay().isBlank()){
+            if (!informationForm.getBirthDay().matches(RegexConfig.day)){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                        new ResponseObject(400,"Update Information fail", "Birthday is not in the correct format")
+                );
+            }
         }
 
         informationForm.setAccountId(getAccountId());
