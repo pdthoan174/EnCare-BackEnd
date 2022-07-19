@@ -36,8 +36,8 @@ public class ClientDoctor {
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
         ClientSessionHandler clientSessionHandler = new ClientSessionHandler();
         ListenableFuture<StompSession> listenableFuture = stompClient.connect(
-//                "ws://enclave-encare.herokuapp.com/ws",clientSessionHandler
-                "ws://13.215.200.248/ws",clientSessionHandler
+                "ws://enclave-encare.herokuapp.com/ws",clientSessionHandler
+//                "ws://13.215.200.248/ws",clientSessionHandler
         );
         StompSession session = listenableFuture.get();
         session.subscribe("/topic/messages/"+accountDoctorId,clientSessionHandler);

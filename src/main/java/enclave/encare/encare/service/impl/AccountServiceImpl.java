@@ -93,6 +93,11 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
 
     @Override
     public boolean updateInformation(InformationForm informationForm) {
+        Date date = TimeConfig.getDate(informationForm.getBirthDay());
+        Date now = new Date();
+        if (!date.before(now)) {
+            return false;
+        }
         Account account = accountRepository.findByAccountId(informationForm.getAccountId());
         account.setAccountId(informationForm.getAccountId());
 

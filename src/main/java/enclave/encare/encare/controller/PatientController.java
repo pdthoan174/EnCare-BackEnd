@@ -78,8 +78,8 @@ public class PatientController {
                     new ResponseObject(200,"Feedback success","")
             );
         }
-        return ResponseEntity.status(HttpStatus.OK).body(
-            new ResponseObject(200, "Feedback success","This appointment already feedback")
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            new ResponseObject(400, "Feedback fail","This appointment already feedback")
         );
     }
 
@@ -114,7 +114,7 @@ public class PatientController {
         }
         userService.uploadAvatar(imageForm);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200,"Update avatar","")
+                new ResponseObject(200,"Update avatar success","")
         );
     }
 
