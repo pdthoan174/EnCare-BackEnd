@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public interface UserService {
     UserResponse findById(long id);
     long findUserIdByAccountId(long accountId);
+    UserResponse findUserByAccountId(long accountId);
     boolean register(RegisterFormUser registerFormUser);
     void uploadAvatar(ImageForm imageForm);
 }

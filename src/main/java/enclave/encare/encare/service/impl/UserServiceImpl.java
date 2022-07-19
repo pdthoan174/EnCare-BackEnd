@@ -48,6 +48,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserResponse findUserByAccountId(long accountId) {
+        return findById(findUserIdByAccountId(accountId));
+    }
+
+    @Override
     public boolean register(RegisterFormUser registerFormUser) {
         long id = accountService.registerUser(registerFormUser);
         if (id != 0){

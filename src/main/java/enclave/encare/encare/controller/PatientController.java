@@ -131,6 +131,13 @@ public class PatientController {
         );
     }
 
+    @GetMapping("/myProfile")
+    public ResponseEntity<ResponseObject> myInformation(){
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(200, "My Information", userService.findUserByAccountId(getAccountId()))
+        );
+    }
+
     private long getAccountId(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication!=null){
