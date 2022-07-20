@@ -10,6 +10,9 @@ import enclave.encare.encare.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -40,6 +43,11 @@ public class UserServiceImpl implements UserService {
         return false;
     }
 
+    @Override
+    public List<UserResponse> findAll() {
+        return transformData(userRepository.findAll());
+    }
+
     private UserResponse transformData(User user){
         UserResponse userResponse = new UserResponse(
                 user.getUserId(),
@@ -47,5 +55,11 @@ public class UserServiceImpl implements UserService {
         );
 
         return userResponse;
+    }
+
+    private List<UserResponse> transformData(List<User> users){
+        List<UserResponse> userResponseList = new ArrayList<>();
+        users.forEach(user -> userResponseList.add(transformData(user)));
+        return  userResponseList;
     }
 }
