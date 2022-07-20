@@ -64,6 +64,14 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
+    public DoctorResponse findByAccountId(long id) {
+        Doctor doctor = doctorRepository.findByAccount_AccountId(id);
+        if (doctor == null)
+            return null;
+        return transformData(doctor);
+    }
+
+    @Override
     public List<DoctorResponse> findByName(String name) {
         List<Doctor> doctorList = doctorRepository.findByAccount_Name(name);
         if (doctorList == null)
