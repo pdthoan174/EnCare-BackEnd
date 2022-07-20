@@ -16,7 +16,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class AccountServiceImpl implements AccountService, UserDetailsService {
@@ -108,6 +110,11 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
         return transformData(accountRepository.findByAccountId(accountId));
     }
 
+    @Override
+    public List<AccountResponse> findAll() {
+        return transformData(accountRepository.findAll());
+    }
+
     private AccountResponse transformData(Account account) {
         AccountResponse accountResponse = new AccountResponse();
 
@@ -117,9 +124,21 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
         accountResponse.setName(account.getName());
         accountResponse.setAvatar(account.getAvatar());
         accountResponse.setDescription(account.getDescription());
-        accountResponse.setBirthday(TimeConfig.getTime(account.getBirthday()));
-        accountResponse.setCreateDate(TimeConfig.getTime(account.getCreateDate()));
+        Date date = account.getBirthday();
+        if (date!=null)
+            accountResponse.setBirthday(TimeConfig.getTime(date));
+        String createDate = TimeConfig.getTime(account.getCreateDate());
+        if (createDate!=null || createDate.length()>0){
+            accountResponse.setCreateDate(createDate);
+        }
 
+
+        return accountResponse;
+    }
+
+    private List<AccountResponse> transformData(List<Account> accounts) {
+        List<AccountResponse> accountResponse =new ArrayList<>();
+        accounts.forEach(account -> accountResponse.add(transformData(account)));
         return accountResponse;
     }
 }
