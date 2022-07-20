@@ -13,6 +13,8 @@ import java.util.List;
 public interface DoctorService {
     DoctorResponse findById(long id);
 
+    DoctorResponse findByAccountId(long id);
+
     List<DoctorResponse> findByName(String name);
 
     String updateInfor(DoctorInformationForm doctorInformationForm) throws ParseException;
