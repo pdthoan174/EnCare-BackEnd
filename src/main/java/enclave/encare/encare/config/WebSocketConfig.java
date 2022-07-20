@@ -30,37 +30,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     @Override
-    public void configureWebSocketTransport(WebSocketTransportRegistration webSocketTransportRegistration) {
-
-    }
-
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration channelRegistration) {
-
-    }
-
-    @Override
-    public void configureClientOutboundChannel(ChannelRegistration channelRegistration) {
-
-    }
-
-    @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> list) {
-
-    }
-
-    @Override
-    public void addReturnValueHandlers(List<HandlerMethodReturnValueHandler> list) {
-
-    }
-
-    @Override
-    public boolean configureMessageConverters(List<MessageConverter> list) {
-        return false;
-    }
-
-
-    @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/topic");
         registry.setApplicationDestinationPrefixes("/app");

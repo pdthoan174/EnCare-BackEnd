@@ -126,7 +126,7 @@ public class HomeController {
                     new ResponseObject(400,"Register fail", "Name is not in the correct format")
             );
         }
-        if (TimeConfig.getDate(registerFormDoctor.getBirthDay())==null){
+        if (!registerFormDoctor.getBirthDay().matches(RegexConfig.day)){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     new ResponseObject(400,"Register fail", "Birthday is not in the correct format")
             );
@@ -144,10 +144,22 @@ public class HomeController {
 
     @PostMapping("/update")
     public ResponseEntity<ResponseObject> update(@Valid @RequestBody InformationForm informationForm){
+        if (!informationForm.getBirthDay().isBlank()){
+            if (!informationForm.getBirthDay().matches(RegexConfig.day)){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                        new ResponseObject(400,"Update Information fail", "Birthday is not in the correct format")
+                );
+            }
+        }
+
         informationForm.setAccountId(getAccountId());
-        accountService.updateInformation(informationForm);
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200, "Update Information success", "")
+        if (accountService.updateInformation(informationForm)){
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(200, "Update Information success", "")
+            );
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ResponseObject(400, "The date of birth exceeds the current time", "")
         );
     }
 
@@ -207,7 +219,7 @@ public class HomeController {
     @GetMapping("/check")
     public ResponseEntity<ResponseObject> check(){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400, "Find fail", "")
+                new ResponseObject(400, "Find fail", appointmentService.findAll())
         );
     }
 

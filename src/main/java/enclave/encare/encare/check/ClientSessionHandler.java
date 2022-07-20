@@ -16,12 +16,16 @@ public class ClientSessionHandler implements StompSessionHandler {
 
     @Override
     public void handleException(StompSession session, StompCommand command, StompHeaders headers, byte[] payload, Throwable exception) {
-
+        System.out.println(exception);
+        System.out.println(session.getSessionId());
+        System.out.println(command.getMessageType());
+        System.out.println(headers);
+        System.out.println(payload);
     }
 
     @Override
     public void handleTransportError(StompSession session, Throwable exception) {
-
+        System.out.println(exception);
     }
 
     @Override

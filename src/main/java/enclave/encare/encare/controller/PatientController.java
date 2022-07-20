@@ -1,11 +1,9 @@
 package enclave.encare.encare.controller;
 
 import enclave.encare.encare.config.RegexConfig;
-import enclave.encare.encare.config.TimeConfig;
 import enclave.encare.encare.form.*;
 import enclave.encare.encare.jwt.JwtTokenProvider;
 import enclave.encare.encare.model.ResponseObject;
-import enclave.encare.encare.modelResponse.AppointmentResponse;
 import enclave.encare.encare.service.*;
 import enclave.encare.encare.until.CustomUserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,8 +76,8 @@ public class PatientController {
                     new ResponseObject(200,"Feedback success","")
             );
         }
-        return ResponseEntity.status(HttpStatus.OK).body(
-            new ResponseObject(200, "Feedback success","This appointment already feedback")
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+            new ResponseObject(400, "Feedback fail","This appointment already feedback")
         );
     }
 
@@ -114,7 +112,7 @@ public class PatientController {
         }
         userService.uploadAvatar(imageForm);
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200,"Update avatar","")
+                new ResponseObject(200,"Update avatar success","")
         );
     }
 
@@ -128,6 +126,13 @@ public class PatientController {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ResponseObject(400,"Update new password fail","Old password fail")
+        );
+    }
+
+    @GetMapping("/myProfile")
+    public ResponseEntity<ResponseObject> myInformation(){
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(200, "My Information", userService.findUserByAccountId(getAccountId()))
         );
     }
 

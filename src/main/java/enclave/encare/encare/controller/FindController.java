@@ -4,6 +4,7 @@ import enclave.encare.encare.model.Hospital;
 import enclave.encare.encare.model.ResponseObject;
 import enclave.encare.encare.modelResponse.DoctorResponse;
 import enclave.encare.encare.modelResponse.HospitalResponse;
+import enclave.encare.encare.modelResponse.UserResponse;
 import enclave.encare.encare.service.CategoryService;
 import enclave.encare.encare.service.DoctorService;
 import enclave.encare.encare.service.HospitalService;
@@ -38,6 +39,19 @@ public class FindController {
         }
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(200,"Information of doctor", doctorResponse)
+        );
+    }
+
+    @GetMapping("/patient/{patientId}")
+    public ResponseEntity<ResponseObject> informationPatient(@PathVariable("patientId") long patientId){
+        UserResponse userResponse = userService.findById(patientId);
+        if (userResponse == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400,"This patient does not exist", "")
+            );
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(200,"Information of patient", userResponse)
         );
     }
 
