@@ -8,10 +8,7 @@ import enclave.encare.encare.model.Account;
 import enclave.encare.encare.model.Doctor;
 import enclave.encare.encare.model.ResponseObject;
 import enclave.encare.encare.model.User;
-import enclave.encare.encare.service.CategoryService;
-import enclave.encare.encare.service.DoctorService;
-import enclave.encare.encare.service.HospitalService;
-import enclave.encare.encare.service.UserService;
+import enclave.encare.encare.service.*;
 import enclave.encare.encare.until.CustomUserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,6 +38,9 @@ public class HomeController {
 
     @Autowired
     HospitalService hospitalService;
+
+    @Autowired
+    StatusService statusService;
 
     @PostMapping("/login")
     public ResponseEntity<ResponseObject> login(@RequestBody LoginForm loginForm){
@@ -89,6 +89,7 @@ public class HomeController {
             new ResponseObject(200, "List Category", categoryService.listCategory())
         );
     }
+
 
     @GetMapping("/listDoctor/categoryId={categoryId}")
     public ResponseEntity<ResponseObject> listDoctorOfCategoryId(@PathVariable("categoryId") long categoryId){
