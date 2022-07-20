@@ -1,8 +1,6 @@
 package enclave.encare.encare.service.impl;
 
-import enclave.encare.encare.model.Doctor;
 import enclave.encare.encare.model.Hospital;
-import enclave.encare.encare.modelResponse.DoctorResponse;
 import enclave.encare.encare.modelResponse.HospitalResponse;
 import enclave.encare.encare.repository.HospitalRepository;
 import enclave.encare.encare.service.HospitalService;
@@ -20,9 +18,15 @@ public class HospitalServiceImpl implements HospitalService {
 
     @Override
     public HospitalResponse findById(long id) {
-        Hospital hospital = hospitalRepository.findByHospitalId(id);
-        if(hospital==null) return null;
-        return transformData(hospitalRepository.findByHospitalId(id));
+        try {
+            Hospital hospital = hospitalRepository.findByHospitalId(id);
+            if (hospital!=null){
+                return transformData(hospital);
+            }
+            return null;
+        }catch (Exception e){
+            return null;
+        }
     }
 
     @Override

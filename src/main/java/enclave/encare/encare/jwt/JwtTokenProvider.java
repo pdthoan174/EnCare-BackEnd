@@ -11,7 +11,7 @@ import java.util.Date;
 @Component
 @Slf4j
 public class JwtTokenProvider {
-    @Value("${application.security-key}")
+    @Value("${application.security.secret-key}")
     private String jwtSecretKey;
 
     private final long expirationTime = 30*24*60*60;

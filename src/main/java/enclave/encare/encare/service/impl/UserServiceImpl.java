@@ -1,13 +1,17 @@
 package enclave.encare.encare.service.impl;
 
+import enclave.encare.encare.form.ImageForm;
 import enclave.encare.encare.form.RegisterFormUser;
 import enclave.encare.encare.model.Account;
 import enclave.encare.encare.model.User;
 import enclave.encare.encare.modelResponse.UserResponse;
+import enclave.encare.encare.repository.AccountRepository;
 import enclave.encare.encare.repository.UserRepository;
 import enclave.encare.encare.service.AccountService;
+import enclave.encare.encare.service.StorageService;
 import enclave.encare.encare.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,6 +21,12 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     @Autowired
+    StorageService storageService;
+
+    @Autowired
+    AccountRepository accountRepository;
+
+    @Autowired
     UserRepository userRepository;
 
     @Autowired
@@ -24,7 +34,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse findById(long id) {
-        return transformData(userRepository.findByUserId(id));
+        try {
+            User user = userRepository.findByUserId(id);
+            if (user!=null){
+                return transformData(userRepository.findByUserId(id));
+            }
+            return null;
+        } catch (Exception e){
+            return null;
+        }
+    }
+
+    @Override
+    public long findUserIdByAccountId(long accountId) {
+        return userRepository.findUserByAccountId(accountId).getUserId();
+    }
+
+    @Override
+    public UserResponse findUserByAccountId(long accountId) {
+        return findById(findUserIdByAccountId(accountId));
     }
 
     @Override
@@ -44,8 +72,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+<<<<<<< HEAD
     public List<UserResponse> findAll() {
         return transformData(userRepository.findAll());
+=======
+    public void uploadAvatar(ImageForm imageForm) {
+        Account account = accountRepository.findByAccountId(imageForm.getAccountId());
+        account.setAvatar(storageService.uploadFile(imageForm.getFile()));
+        accountRepository.save(account);
+>>>>>>> 82c86b93a95a2cef2ce9f9ddbacedceaaf7d22cc
     }
 
     private UserResponse transformData(User user){

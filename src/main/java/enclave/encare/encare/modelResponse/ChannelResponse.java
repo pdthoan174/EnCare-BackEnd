@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ChannelResponse {
     private long channelId;
-    private DoctorResponse doctorResponse;
-    private UserResponse userResponse;
+    private AccountResponse doctorResponse;
+    private AccountResponse userResponse;
 
 }

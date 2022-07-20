@@ -2,26 +2,41 @@ package enclave.encare.encare.service.impl;
 
 import enclave.encare.encare.config.TimeConfig;
 import enclave.encare.encare.form.AppointmentForm;
+//<<<<<<< HEAD
+import enclave.encare.encare.form.FreeTimeForm;
+import enclave.encare.encare.model.*;
+import enclave.encare.encare.modelResponse.AccountResponse;
+import enclave.encare.encare.modelResponse.AppointmentResponse;
+import enclave.encare.encare.modelResponse.DoctorResponse;
+import enclave.encare.encare.modelResponse.UserResponse;
+//=======
 import enclave.encare.encare.model.Appointment;
 import enclave.encare.encare.model.Doctor;
 import enclave.encare.encare.model.Status;
 import enclave.encare.encare.model.User;
+<<<<<<< HEAD
 import enclave.encare.encare.modelResponse.AppointmentResponse;
 import enclave.encare.encare.modelResponse.DoctorResponse;
 import enclave.encare.encare.modelResponse.UserResponse;
+=======
+//>>>>>>> doctor
+>>>>>>> 82c86b93a95a2cef2ce9f9ddbacedceaaf7d22cc
 import enclave.encare.encare.repository.AppointmentRepository;
-import enclave.encare.encare.service.AppointmentService;
-import enclave.encare.encare.service.DoctorService;
-import enclave.encare.encare.service.StatusService;
-import enclave.encare.encare.service.UserService;
+import enclave.encare.encare.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
+//<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+//=======
+import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
+//>>>>>>> doctor
 
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
@@ -38,6 +53,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Autowired
     StatusService statusService;
 
+<<<<<<< HEAD
 
     @Override
     public List<AppointmentResponse> findAll() {
@@ -49,6 +65,8 @@ public class AppointmentServiceImpl implements AppointmentService {
         return appointmentResponseList;
     }
 
+=======
+>>>>>>> 82c86b93a95a2cef2ce9f9ddbacedceaaf7d22cc
     @Override
     public List<AppointmentResponse> findByHospitalId(long hospitalId) {
         List<AppointmentResponse> appointmentResponseList = new ArrayList<>();
@@ -85,10 +103,132 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public AppointmentResponse findById(long id) {
-        Appointment appointment = appointmentRepository.findByAppointmentId(id);
-        if (appointment == null) return null;
+//<<<<<<< HEAD
+        try{
+            Appointment appointment = appointmentRepository.findByAppointmentId(id);
+            if (appointment!=null){
+                return transformData(appointment);
+            }
+            return null;
+        } catch (Exception e){
+            return null;
+        }
+    }
 
-        return transformData(appointment);
+    @Override
+    public boolean newAppointment(AppointmentForm appointmentForm) {
+
+        Date day = TimeConfig.getDate(appointmentForm.getDay());
+        int time = appointmentForm.getTime();
+        long userId = userService.findUserIdByAccountId(appointmentForm.getAccountUserId());
+        if (findTimeAndDay(appointmentForm.getDoctorId(), time, day)){
+            User user = new User(userId);
+            Doctor doctor = new Doctor(appointmentForm.getDoctorId());
+            Status status = new Status(1); // Đang chờ xác nhận
+
+            Appointment appointment = new Appointment();
+            appointment.setUser(user);
+            appointment.setDoctor(doctor);
+            appointment.setTime(time);
+            appointment.setDay(day);
+//            appointment.setDescription(appointmentForm.getDescription().trim());
+            appointment.setStatus(status);
+            appointment.setSymptoms(appointmentForm.getSymptomps().trim());
+            appointment.setCreateDate(new Date());
+
+            appointmentRepository.save(appointment);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public List<AppointmentResponse> historyAppointmentUser(long accountId, int page) {
+        long userId = userService.findUserIdByAccountId(accountId);
+        User user = new User(userId);
+        Pageable pageable = PageRequest.of(page, 6);
+        List<Appointment> appointmentList = appointmentRepository.findByUser(user, pageable);
+        List<AppointmentResponse> appointmentResponseList = new ArrayList<AppointmentResponse>();
+        for (Appointment appointment:appointmentList){
+            AppointmentResponse appointmentResponse = transformData(appointment);
+            appointmentResponseList.add(appointmentResponse);
+        }
+        return appointmentResponseList;
+    }
+
+    @Override
+    public List<Integer> listFreeTime(FreeTimeForm freeTimeForm) {
+        Doctor doctor = new Doctor(freeTimeForm.getDoctorId());
+        Date date = TimeConfig.getDate(freeTimeForm.getTime());
+        boolean check = true;
+        List<Appointment> appointmentList = appointmentRepository.findByDoctorAndDay(doctor, date);
+        List<Integer> list = new ArrayList<Integer>();
+        for (int i = 7; i<=11; i++){
+            check = true;
+            for (int j=0; j<appointmentList.size(); j++){
+                if (i == appointmentList.get(j).getTime()){
+                    check = false;
+                    break;
+                }
+            }
+            if (check == true){
+                list.add(i);
+            }
+        }
+        for (int i = 13; i<=16; i++){
+            check = true;
+            for (int j=0; j<appointmentList.size(); j++){
+                if (i == appointmentList.get(j).getTime()){
+                    check = false;
+                    break;
+                }
+            }
+            if (check == true){
+                list.add(i);
+            }
+        }
+
+        return list;
+    }
+
+    @Override
+    public boolean cancelAppointment(long accountId, long appointmentId) {
+        long userId = userService.findUserIdByAccountId(accountId);
+        User user = new User(userId);
+        Appointment appointment = appointmentRepository.findByAppointmentIdAndUser(appointmentId, user);
+        if (appointment == null){
+            return false;
+        }
+        Status status = new Status(4);
+        appointment.setStatus(status);
+        appointmentRepository.save(appointment);
+        return true;
+    }
+
+    @Override
+    public List<AppointmentResponse> findAll() {
+        List<Appointment> appointmentList = appointmentRepository.findAll();
+        List<AppointmentResponse> appointmentResponseList = new ArrayList<AppointmentResponse>();
+        for (Appointment appointment:appointmentList){
+            AppointmentResponse appointmentResponse = transformData(appointment);
+            appointmentResponseList.add(appointmentResponse);
+        }
+        return appointmentResponseList;
+    }
+
+    public boolean findTimeAndDay(long doctorId, int time, Date date){
+//        Appointment appointment = appointmentRepository.findByTimeAndDay(time, date);
+        Doctor doctor = new Doctor(doctorId);
+        List<Appointment> appointment = appointmentRepository.findByDoctorAndTimeAndDayEquals(doctor, time, date);
+        if (appointment.size() > 0){
+            return false;
+        }
+        return true;
+//=======
+//        Appointment appointment = appointmentRepository.findByAppointmentId(id);
+//        if (appointment == null) return null;
+//
+//        return transformData(appointment);
     }
 
     @Override
@@ -99,6 +239,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         if (appointmentList == null) return null;
 
         return transformData(appointmentList);
+//>>>>>>> doctor
     }
 
     @Override
@@ -123,31 +264,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         if (appointmentList == null) return null;
 
         return transformData(appointmentList);
-    }
-
-    @Override
-    public boolean newAppointment(AppointmentForm appointmentForm) {
-
-        Date day = TimeConfig.getDate(appointmentForm.getDay());
-        int time = appointmentForm.getTime();
-        if (findTimeAndDay(time, day)) {
-            User user = new User(appointmentForm.getUserId());
-            Doctor doctor = new Doctor(appointmentForm.getDoctorId());
-            Status status = new Status(1); // Đang chờ xác nhận
-
-            Appointment appointment = new Appointment();
-            appointment.setUser(user);
-            appointment.setDoctor(doctor);
-            appointment.setTime(time);
-            appointment.setDay(day);
-            appointment.setDescription(appointmentForm.getDescription());
-            appointment.setStatus(status);
-            appointment.setSymptoms(appointmentForm.getSymptomps());
-
-            appointmentRepository.save(appointment);
-            return true;
-        }
-        return false;
     }
 
     @Override

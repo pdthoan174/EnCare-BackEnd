@@ -12,8 +12,8 @@ import java.util.List;
 public class HospitalResponse {
     private long hospitalId;
     private String description;
-    private long latMap;
-    private long longMap;
+    private double latMap;
+    private double longMap;
     private long rating;
     private long countRating;
     private String address;

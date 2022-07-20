@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.List;
@@ -18,6 +19,7 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long categoryId;
     private String name;
+    @Type(type = "text")
     private String description;
 
     @OneToMany(mappedBy = "category")
@@ -26,5 +28,9 @@ public class Category {
 
     public Category(long categoryId){
         this.categoryId = categoryId;
+    }
+    public Category(String name, String description){
+        this.name = name;
+        this.description = description;
     }
 }

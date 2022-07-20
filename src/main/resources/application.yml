@@ -1,2 +1,30 @@
+cloud:
+  aws:
+    credentials:
+      access-key: AKIASRKRB2OB7HWIEADE
+      secret-key: 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
+    region:
+      static: ap-southeast-1
+    stack:
+      auto: false
+  mapbox:
+    token: pk.eyJ1Ijoic2l4YmxhY2siLCJhIjoiY2w0dzNpYnVyMXFhYjNlazI5OGF6MGJzcyJ9.DMrrU3tLH2gfvfY1wK9G4w
+
 application:
-  security-key: encare
+  bucket:
+    name: nts-encare
+  security:
+    secret-key: encare
+
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2MB
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+twilio:
+  account_sid: AC914bef40cbbb437f8bee775b4109ec6e
+  auth_token: 01dca4f846000f90027c5835f99ce804
+  trial_phone: +16815324305

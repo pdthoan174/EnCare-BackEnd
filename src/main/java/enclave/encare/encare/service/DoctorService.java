@@ -12,6 +12,12 @@ import java.util.List;
 
 public interface DoctorService {
     DoctorResponse findById(long id);
+//<<<<<<< HEAD
+    long findDoctorIdByAccountId(long accountId);
+    List<DoctorResponse> listDoctorOfCategoryRating(long categoryId, int page, float rating, double lon, double lat);
+    void updateRating(long appointmentId, float number);
+    List<DoctorResponse> findLikeName(String name, int page);
+//=======
 
     DoctorResponse findByAccountId(long id);
 
@@ -34,4 +40,5 @@ public interface DoctorService {
     List<DoctorResponse> listDoctorOfCategory(long categoryId);
 
     List<DoctorResponse> listDoctorOfCategory(long categoryId, int page);
+//>>>>>>> doctor
 }

@@ -18,8 +18,8 @@ public class Hospital {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long hospitalId;
     private String description;
-    private long latMap;
-    private long longMap;
+    private double latMap;
+    private double longMap;
     private long rating;
     private long countRating;
     private String address;
@@ -31,5 +31,15 @@ public class Hospital {
 
     public Hospital(long hospitalId){
         this.hospitalId = hospitalId;
+    }
+
+    public Hospital(String description, long latMap, long longMap, long rating, long countRating, String address, String name) {
+        this.description = description;
+        this.latMap = latMap;
+        this.longMap = longMap;
+        this.rating = rating;
+        this.countRating = countRating;
+        this.address = address;
+        this.name = name;
     }
 }

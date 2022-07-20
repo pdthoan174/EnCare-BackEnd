@@ -23,8 +23,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
-@RequestMapping("/doctor")
+@RequestMapping("/api/doctor")
 public class DoctorController {
+
     @Autowired
     DoctorService doctorService;
 

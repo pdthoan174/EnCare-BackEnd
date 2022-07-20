@@ -1,12 +1,15 @@
 package enclave.encare.encare.controller;
 
-import enclave.encare.encare.form.LoginForm;
-import enclave.encare.encare.form.RegisterFormDoctor;
-import enclave.encare.encare.form.RegisterFormUser;
+import enclave.encare.encare.config.RegexConfig;
+import enclave.encare.encare.form.*;
 import enclave.encare.encare.jwt.JwtTokenProvider;
 import enclave.encare.encare.model.Account;
-import enclave.encare.encare.model.Doctor;
 import enclave.encare.encare.model.ResponseObject;
+import enclave.encare.encare.modelResponse.AppointmentResponse;
+import enclave.encare.encare.modelResponse.CategoryResponse;
+import enclave.encare.encare.modelResponse.LoginResponse;
+import enclave.encare.encare.modelResponse.RegisterResponse;
+import enclave.encare.encare.service.*;
 import enclave.encare.encare.model.User;
 import enclave.encare.encare.service.*;
 import enclave.encare.encare.until.CustomUserDetail;
@@ -17,18 +20,28 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
+@RequestMapping("/api/user")
 public class HomeController {
     @Autowired
     AuthenticationManager authenticationManager;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Autowired
     JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    AccountService accountService;
 
     @Autowired
     CategoryService categoryService;
@@ -40,46 +53,118 @@ public class HomeController {
     HospitalService hospitalService;
 
     @Autowired
+<<<<<<< HEAD
     StatusService statusService;
+=======
+    AppointmentService appointmentService;
+
+    @Autowired
+    MapboxService mapboxService;
+
+    @Autowired
+    SmsService smsService;
+>>>>>>> 82c86b93a95a2cef2ce9f9ddbacedceaaf7d22cc
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseObject> login(@RequestBody LoginForm loginForm){
+    public ResponseEntity<ResponseObject> login(@Valid @RequestBody LoginForm loginForm){
+
+        if (!loginForm.getPhone().matches(RegexConfig.phone)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400,"login fail", "Phone number is not in the correct format")
+            );
+        }
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginForm.getPhone(),loginForm.getPassword()
+                        "+84"+Long.parseLong(loginForm.getPhone().trim()),
+                        loginForm.getPassword()
                 )
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
         CustomUserDetail customUserDetail = (CustomUserDetail) authentication.getPrincipal();
         Account account = customUserDetail.getAccount();
         String token = jwtTokenProvider.generateToken(customUserDetail);
+        LoginResponse loginResponse = new LoginResponse(account.getAccountId(), account.getRole(), account.getPassword(), token);
 
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200,"type: "+account.getRole(), token)
+                new ResponseObject(200,"login success", loginResponse)
         );
     }
 
     @PostMapping("/registerUser")
-    public ResponseEntity<ResponseObject> registerUser(@RequestBody RegisterFormUser registerFormUser){
+    public ResponseEntity<ResponseObject> registerUser(@Valid @RequestBody RegisterFormUser registerFormUser){
+        if (!registerFormUser.getPhone().matches(RegexConfig.phone)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400,"Register fail", "Phone number is not in the correct format")
+            );
+        }
+        if (!registerFormUser.getName().matches(RegexConfig.name)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400,"Register fail", "Name is not in the correct format")
+            );
+        }
         if (userService.register(registerFormUser)){
+            RegisterResponse registerResponse = new RegisterResponse(
+                    registerFormUser.getName(),
+                    "+84"+Long.parseLong(registerFormUser.getPhone().trim()),
+                    passwordEncoder.encode(registerFormUser.getPassword())
+            );
+
             return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200,"Register Success", "")
+                new ResponseObject(200,"Register Success", registerResponse)
             );
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400,"Register fail", "đã tồn tại số điện thoại này")
+                new ResponseObject(400,"Register fail", "This phone number already exists")
         );
     }
 
     @PostMapping("/registerDoctor")
-    public ResponseEntity<ResponseObject> registerDoctor(@RequestBody RegisterFormDoctor registerFormDoctor){
+    public ResponseEntity<ResponseObject> registerDoctor(@Valid @RequestBody RegisterFormDoctor registerFormDoctor){
+        if (!registerFormDoctor.getPhone().matches(RegexConfig.phone)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400,"Register fail", "Phone number is not in the correct format")
+            );
+        }
+        if (!registerFormDoctor.getName().matches(RegexConfig.name)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400,"Register fail", "Name is not in the correct format")
+            );
+        }
+        if (!registerFormDoctor.getBirthDay().matches(RegexConfig.day)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400,"Register fail", "Birthday is not in the correct format")
+            );
+        }
+
         if (doctorService.register(registerFormDoctor)){
             return ResponseEntity.status(HttpStatus.OK).body(
                     new ResponseObject(200,"Register Success", "")
             );
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400,"Register fail", "đã tồn tại số điện thoại này")
+                new ResponseObject(400,"Register fail", "This phone number already exists")
+        );
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<ResponseObject> update(@Valid @RequestBody InformationForm informationForm){
+        if (!informationForm.getBirthDay().isBlank()){
+            if (!informationForm.getBirthDay().matches(RegexConfig.day)){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                        new ResponseObject(400,"Update Information fail", "Birthday is not in the correct format")
+                );
+            }
+        }
+
+        informationForm.setAccountId(getAccountId());
+        if (accountService.updateInformation(informationForm)){
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(200, "Update Information success", "")
+            );
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ResponseObject(400, "The date of birth exceeds the current time", "")
         );
     }
 
@@ -90,14 +175,75 @@ public class HomeController {
         );
     }
 
+<<<<<<< HEAD
 
     @GetMapping("/listDoctor/categoryId={categoryId}")
     public ResponseEntity<ResponseObject> listDoctorOfCategoryId(@PathVariable("categoryId") long categoryId){
+=======
+    @GetMapping("/listDoctor")
+    public ResponseEntity<ResponseObject> listDoctorOfCategoryIdAndRating(
+            @RequestParam(required = true, name = "categoryId") long categoryId,
+            @RequestParam(required = false, name = "lon", defaultValue = "0") double lon,
+            @RequestParam(required = false, name = "lat", defaultValue = "0") double lat,
+            @RequestParam(required = false, name = "page", defaultValue = "0") int page,
+            @RequestParam(required = false, name = "rating", defaultValue = "0") int rating){
+
+        CategoryResponse categoryResponse = categoryService.findById(categoryId);
+        if (categoryResponse==null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400, "This category does not exist", "")
+            );
+        }
+>>>>>>> 82c86b93a95a2cef2ce9f9ddbacedceaaf7d22cc
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200, "List Category", doctorService.listDoctorOfCategory(categoryId))
+                new ResponseObject(200, "List Category", doctorService.listDoctorOfCategoryRating(categoryId, page, rating, lon, lat))
         );
     }
 
+//<<<<<<< HEAD
+
+    @PostMapping("/listFreeTime")
+    public ResponseEntity<ResponseObject> listFreeTimeOfDoctor(@Valid @RequestBody FreeTimeForm freeTimeForm){
+        if (!freeTimeForm.getTime().matches(RegexConfig.day)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400, "Day is not correct format", "")
+            );
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(200, "List free time", appointmentService.listFreeTime(freeTimeForm))
+        );
+    }
+
+    @GetMapping("/appointment")
+    public ResponseEntity<ResponseObject> informationAppointment(@RequestParam(required = true, name = "id", defaultValue = "0") long appointmentId){
+        AppointmentResponse appointmentResponse = appointmentService.findById(appointmentId);
+        System.out.println(appointmentId);
+        if (appointmentResponse!=null){
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ResponseObject(200, "Information Appointment", appointmentResponse)
+            );
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ResponseObject(400, "Find fail", "Don't have appointment id")
+        );
+    }
+
+    @GetMapping("/check")
+    public ResponseEntity<ResponseObject> check(){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ResponseObject(400, "Find fail", appointmentService.findAll())
+        );
+    }
+
+    private long getAccountId(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication!=null){
+            String token = jwtTokenProvider.generateToken((CustomUserDetail) authentication.getPrincipal());
+            return jwtTokenProvider.getUserId(token);
+        }
+        return 0;
+    }
+//=======
     @GetMapping("/listDoctor/categoryId={categoryId}/page={page}")
     public ResponseEntity<ResponseObject> listDoctorOfCategoryId(@PathVariable("categoryId") long categoryId, @PathVariable("page") int page){
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -105,4 +251,5 @@ public class HomeController {
         );
     }
 
+//>>>>>>> doctor
 }

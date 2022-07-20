@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -16,6 +17,8 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long messageId;
     private String message;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createDate;
 
     @ManyToOne
     @JoinColumn(name = "channelId")

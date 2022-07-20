@@ -1,15 +1,25 @@
 package enclave.encare.encare.service;
 
 import enclave.encare.encare.form.AppointmentForm;
+//<<<<<<< HEAD
+import enclave.encare.encare.form.FreeTimeForm;
 import enclave.encare.encare.modelResponse.AppointmentResponse;
 
+//=======
 import java.util.Date;
+//>>>>>>> doctor
 import java.util.List;
 
 public interface AppointmentService {
-    List<AppointmentResponse> findAll();
 
     AppointmentResponse findById(long id);
+//<<<<<<< HEAD
+    boolean newAppointment(AppointmentForm appointmentForm);
+    List<AppointmentResponse> historyAppointmentUser(long userId, int page);
+    List<Integer> listFreeTime(FreeTimeForm freeTimeForm);
+    boolean cancelAppointment(long accountId, long appointmentId);
+    List<AppointmentResponse> findAll();
+//=======
 
     List<AppointmentResponse> doctorFindByPhone(String phone,Long accountId);
 
@@ -19,8 +29,6 @@ public interface AppointmentService {
 
     List<AppointmentResponse> doctorFindBySymptoms(String symptoms,Long accountId);
 
-
-    boolean newAppointment(AppointmentForm appointmentForm);
 
     String setDescription(long id, String description);
 
@@ -33,8 +41,12 @@ public interface AppointmentService {
     List<AppointmentResponse> findByHospitalId(long hospitalId);
 
     List<AppointmentResponse> findByStatusId(long statusId);
+<<<<<<< HEAD
 
     List<AppointmentResponse> doctorFindByStatus(long statusId,long accountId);
 
     AppointmentResponse findByAppointmentIdAndAccountId(long appointmentId,long accountId);
+=======
+//>>>>>>> doctor
+>>>>>>> 82c86b93a95a2cef2ce9f9ddbacedceaaf7d22cc
 }

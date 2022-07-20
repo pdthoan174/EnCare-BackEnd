@@ -18,9 +18,15 @@ public class StatusServiceImpl implements StatusService {
 
     @Override
     public StatusResponse findById(long id) {
-        Status status = statusRepository.findByStatusId(id);
-        if (status==null) return null;
-        return transformData(status);
+        try{
+            Status status = statusRepository.findByStatusId(id);
+            if (status!=null){
+                return transformData(statusRepository.findByStatusId(id));
+            }
+            return null;
+        } catch (Exception e){
+            return null;
+        }
     }
 
     @Override

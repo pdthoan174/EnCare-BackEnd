@@ -31,10 +31,14 @@ public class Account implements Serializable {
     private Date createDate;
     @Temporal(TemporalType.TIMESTAMP)
     private Date updateDate;
+    private String otpCode;
 
     @OneToOne(mappedBy = "account")
+    @Cascade(org.hibernate.annotations.CascadeType.REMOVE)
     private User user;
+
     @OneToOne(mappedBy = "account")
+    @Cascade(org.hibernate.annotations.CascadeType.REMOVE)
     private Doctor doctor;
 
     @OneToMany(mappedBy = "account")

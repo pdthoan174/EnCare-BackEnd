@@ -1,14 +1,18 @@
 package enclave.encare.encare.service.impl;
 
-import enclave.encare.encare.config.TimeConfig;
-import enclave.encare.encare.form.DoctorInformationForm;
+import enclave.encare.encare.config.NumberConfig;
 import enclave.encare.encare.form.RegisterFormDoctor;
-import enclave.encare.encare.model.*;
-import enclave.encare.encare.modelResponse.CategoryResponse;
+import enclave.encare.encare.form.mapbox.Location;
+import enclave.encare.encare.model.Account;
+import enclave.encare.encare.model.Category;
+import enclave.encare.encare.model.Doctor;
+import enclave.encare.encare.model.Hospital;
 import enclave.encare.encare.modelResponse.DoctorResponse;
-import enclave.encare.encare.modelResponse.HospitalResponse;
 import enclave.encare.encare.repository.AppointmentRepository;
 import enclave.encare.encare.repository.DoctorRepository;
+import enclave.encare.encare.config.TimeConfig;
+import enclave.encare.encare.form.DoctorInformationForm;
+import enclave.encare.encare.model.*;
 import enclave.encare.encare.repository.HospitalRepository;
 import enclave.encare.encare.repository.StatusRepository;
 import enclave.encare.encare.service.*;
@@ -19,9 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -36,7 +38,13 @@ public class DoctorServiceImpl implements DoctorService {
     DoctorRepository doctorRepository;
 
     @Autowired
+    AppointmentRepository appointmentRepository;
+
+    @Autowired
     HospitalRepository hospitalRepository;
+
+    @Autowired
+    StatusRepository statusRepository;
 
     @Autowired
     AccountService accountService;
@@ -47,23 +55,26 @@ public class DoctorServiceImpl implements DoctorService {
     @Autowired
     HospitalService hospitalService;
 
-    @Autowired
-    AppointmentRepository appointmentRepository;
 
 
     @Autowired
-    StatusRepository statusRepository;
-
+    MapboxService mapboxService;
 
     @Override
     public DoctorResponse findById(long id) {
-        Doctor doctor = doctorRepository.findByDoctorId(id);
-        if (doctor == null)
+        try {
+            Doctor doctor = doctorRepository.findByDoctorId(id);
+            if (doctor != null){
+                return transformData(doctor);
+            }
             return null;
-        return transformData(doctor);
+        } catch (Exception e){
+            return null;
+        }
     }
 
     @Override
+<<<<<<< HEAD
     public DoctorResponse findByAccountId(long id) {
         Doctor doctor = doctorRepository.findByAccount_AccountId(id);
         if (doctor == null)
@@ -71,6 +82,20 @@ public class DoctorServiceImpl implements DoctorService {
         return transformData(doctor);
     }
 
+=======
+    public long findDoctorIdByAccountId(long accountId) {
+        return doctorRepository.findDoctorByAccountId(accountId).getDoctorId();
+    }
+
+//    @Override
+//    public DoctorResponse findById(long id) {
+//        Doctor doctor = doctorRepository.findByDoctorId(id);
+//        if (doctor == null)
+//            return null;
+//        return transformData(doctor);
+//    }
+
+>>>>>>> 82c86b93a95a2cef2ce9f9ddbacedceaaf7d22cc
     @Override
     public List<DoctorResponse> findByName(String name) {
         List<Doctor> doctorList = doctorRepository.findByAccount_Name(name);
@@ -100,12 +125,12 @@ public class DoctorServiceImpl implements DoctorService {
                 return "Invalid field birthDay.";
             }
             currentAccount.setBirthday(birthDay);
-            Pattern password_pattern = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$");
-            String password = doctorInformationForm.getPassword();
-            if ((password == null || password.length() < 0) || !password_pattern.matcher(password).matches()) {
-                return "Invalid field passWord.";
-            }
-            currentAccount.setPassword(passwordEncoder.encode(password));
+//            Pattern password_pattern = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$");
+//            String password = doctorInformationForm.getPassword();
+//            if ((password == null || password.length() < 0) || !password_pattern.matcher(password).matches()) {
+//                return "Invalid field passWord.";
+//            }
+//            currentAccount.setPassword(passwordEncoder.encode(password));
             String phone = doctorInformationForm.getPhone();
             Pattern phone_pattern = Pattern.compile("([+]84|0[3|5|7|8|9])+([0-9]{8,10})\\b");
             if (phone == null || !phone_pattern.matcher(phone).matches()) {
@@ -137,6 +162,7 @@ public class DoctorServiceImpl implements DoctorService {
             return "Update success.";
         }
         return "Account is not exist !!!";
+//>>>>>>> doctor
     }
 
     @Override
@@ -148,7 +174,7 @@ public class DoctorServiceImpl implements DoctorService {
             Hospital hospital = new Hospital(registerFormDoctor.getHospitalId());
 
             Doctor doctor = new Doctor();
-            doctor.setRating(0);
+            doctor.setRating(0f);
             doctor.setCountRating(0);
             doctor.setAccount(account);
             doctor.setCategory(category);
@@ -161,6 +187,27 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
+    public List<DoctorResponse> listDoctorOfCategoryRating(long categoryId, int page, float rating, double lon, double lat) {
+        Pageable pageable = PageRequest.of(page, 6);
+        List<Doctor> doctorList = doctorRepository.findDoctorByCategoryAndRatingDesc(categoryId, rating, pageable);
+        List<DoctorResponse> doctorResponseList = new ArrayList<DoctorResponse>();
+        if (lon != 0 && lat != 0) {
+            Location start = new Location(lon, lat);
+            for (Doctor doctor : doctorList) {
+                DoctorResponse doctorResponse = transformData(doctor);
+                Location end = new Location(doctorResponse.getHospitalResponse().getLongMap(), doctorResponse.getHospitalResponse().getLatMap());
+                doctorResponse.setDistance(mapboxService.getDistance(start, end));
+                doctorResponseList.add(doctorResponse);
+            }
+        } else {
+            for (Doctor doctor : doctorList) {
+                DoctorResponse doctorResponse = transformData(doctor);
+                doctorResponseList.add(doctorResponse);
+            }
+        }
+        return doctorResponseList;
+    }
+
     public boolean changeStatusAppointment(long appointmentId, int statusId) {
         Appointment appointment = appointmentRepository.findByAppointmentId(appointmentId);
         if (appointment != null) {
@@ -197,10 +244,34 @@ public class DoctorServiceImpl implements DoctorService {
         List<Doctor> doctorList = doctorRepository.findDoctorByHospitalOrderByRatingDesc(hospital);
         List<DoctorResponse> doctorResponseList = new ArrayList<DoctorResponse>();
         doctorResponseList = transformData(doctorList);
+//>>>>>>> doctor
         return doctorResponseList;
     }
 
     @Override
+    public void updateRating(long appointmentId, float number) {
+        Doctor doctor = appointmentRepository.findDoctorByAppointmentId(appointmentId);
+        long count = doctor.getCountRating();
+        float rating = doctor.getRating();
+        float value = (count*rating+number)/(count+1);
+        doctor.setRating(value);
+        doctor.setCountRating(count+1);
+
+        doctorRepository.save(doctor);
+    }
+
+    @Override
+    public List<DoctorResponse> findLikeName(String name, int page) {
+        Pageable pageable = PageRequest.of(page, 6);
+        List<Doctor> doctorList = doctorRepository.findDoctorByName(name, pageable);
+        List<DoctorResponse> doctorResponseList = new ArrayList<DoctorResponse>();
+        for (Doctor doctor:doctorList){
+            DoctorResponse doctorResponse = transformData(doctor);
+            doctorResponseList.add(doctorResponse);
+        }
+        return doctorResponseList;
+    }
+
     public List<DoctorResponse> listDoctorOfHospital(long hospitalId, int page) {
         Hospital hospital = new Hospital(hospitalId);
         Pageable pageable = PageRequest.of(page, 6);
@@ -241,7 +312,7 @@ public class DoctorServiceImpl implements DoctorService {
         DoctorResponse doctorResponse = new DoctorResponse();
 
         doctorResponse.setDoctorId(doctor.getDoctorId());
-        doctorResponse.setRating(doctor.getRating());
+        doctorResponse.setRating(NumberConfig.round(doctor.getRating()));
         doctorResponse.setCountRating(doctor.getCountRating());
 
         doctorResponse.setAccountResponse(accountService.findById(doctor.getAccount().getAccountId()));

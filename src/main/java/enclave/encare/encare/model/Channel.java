@@ -19,12 +19,12 @@ public class Channel {
     private long channelId;
 
     @ManyToOne
-    @JoinColumn(name = "doctorId")
-    private Doctor doctor;
+    @JoinColumn(name = "accountDoctorId")
+    private Account doctor;
 
     @ManyToOne
-    @JoinColumn(name = "userId")
-    private User user;
+    @JoinColumn(name = "accountUserId")
+    private Account user;
 
     @OneToMany(mappedBy = "channel")
     @Cascade(org.hibernate.annotations.CascadeType.REMOVE)
