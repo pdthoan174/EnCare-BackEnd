@@ -11,6 +11,8 @@ import java.util.List;
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     Doctor findByDoctorId(long id);
 
+    Doctor findByAccount_AccountId(long id);
+
     @Query("SELECT d from Doctor d WHERE d.account.name like %?1% ")
     List<Doctor> findByAccount_Name(String name);
 
