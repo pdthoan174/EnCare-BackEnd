@@ -7,6 +7,9 @@ import enclave.encare.encare.service.StatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class StatusServiceImpl implements StatusService {
 
@@ -20,6 +23,13 @@ public class StatusServiceImpl implements StatusService {
         return transformData(status);
     }
 
+    @Override
+    public List<StatusResponse> findAll() {
+        List<StatusResponse> statusResponses = new ArrayList<>();
+        statusResponses=transformData(statusRepository.findAll());
+        return statusResponses;
+    }
+
     private StatusResponse transformData(Status status){
         StatusResponse statusResponse = new StatusResponse();
 
@@ -28,5 +38,10 @@ public class StatusServiceImpl implements StatusService {
         statusResponse.setDescription(status.getDescription());
 
         return statusResponse;
+    }
+    private List<StatusResponse> transformData(List<Status> statusList){
+        List<StatusResponse> statusResponses = new ArrayList<>();
+        statusList.forEach(status -> statusResponses.add(transformData(status)));
+        return statusResponses;
     }
 }
