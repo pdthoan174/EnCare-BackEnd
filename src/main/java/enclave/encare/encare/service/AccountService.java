@@ -6,6 +6,8 @@ import enclave.encare.encare.form.RegisterFormUser;
 import enclave.encare.encare.modelResponse.AccountResponse;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.List;
+
 public interface AccountService {
     public UserDetails getUserDetailById(long id);
     long registerUser(RegisterFormUser registerFormUser);
@@ -13,4 +15,5 @@ public interface AccountService {
     boolean findByPhone(String phone);
     boolean updateInformation(InformationForm informationForm);
     AccountResponse findById(long accountId);
+    List<AccountResponse> findAll();
 }
