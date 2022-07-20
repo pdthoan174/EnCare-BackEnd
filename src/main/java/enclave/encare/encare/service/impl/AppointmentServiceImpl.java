@@ -8,6 +8,7 @@ import enclave.encare.encare.model.Status;
 import enclave.encare.encare.model.User;
 import enclave.encare.encare.modelResponse.AppointmentResponse;
 import enclave.encare.encare.modelResponse.DoctorResponse;
+import enclave.encare.encare.modelResponse.UserResponse;
 import enclave.encare.encare.repository.AppointmentRepository;
 import enclave.encare.encare.service.AppointmentService;
 import enclave.encare.encare.service.DoctorService;
@@ -41,7 +42,10 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public List<AppointmentResponse> findAll() {
         List<AppointmentResponse> appointmentResponseList = new ArrayList<>();
-        appointmentResponseList = transformData(appointmentRepository.findAll());
+        appointmentRepository.findByAppointmentId(1);
+        List<Appointment> appointmentList= appointmentRepository.findAll();
+        if (appointmentList==null || appointmentList.size()<1) return null;
+        appointmentResponseList = transformData(appointmentList);
         return appointmentResponseList;
     }
 
@@ -61,6 +65,25 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    public List<AppointmentResponse> doctorFindByStatus(long statusId, long accountId) {
+
+        List<AppointmentResponse> appointmentResponseList   = new ArrayList<>();
+        List<Appointment> appointmentList = appointmentRepository.findByStatusStatusIdAndAndDoctor_Account_AccountIdOrderByCreateDate(statusId,accountId);
+
+        return transformData(appointmentList);
+
+    }
+
+    @Override
+    public AppointmentResponse findByAppointmentIdAndAccountId(long appointmentId, long accountId) {
+        AppointmentResponse appointmentResponse = new AppointmentResponse();
+        Appointment appointment = appointmentRepository.findByAppointmentIdAndAndDoctor_Account_AccountIdOrderByCreateDate(appointmentId,accountId);
+
+        if (appointment==null) return null;
+        return transformData(appointment);
+    }
+
+    @Override
     public AppointmentResponse findById(long id) {
         Appointment appointment = appointmentRepository.findByAppointmentId(id);
         if (appointment == null) return null;
@@ -69,18 +92,37 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public List<AppointmentResponse> findByPhone(String phone) {
+    public List<AppointmentResponse> doctorFindByPhone(String phone,Long accountId) {
 //        List<Appointment> appointmentList = appointmentRepository.findAll()
 //                .stream().filter(appointment -> appointment.getUser().getAccount().getPhone().contains(phone)).collect(Collectors.toList());
-        List<Appointment> appointmentList = appointmentRepository.findByUser_Account_PhoneContains(phone);
+        List<Appointment> appointmentList = appointmentRepository.find_by_phone_and_accountId(phone,accountId);
         if (appointmentList == null) return null;
 
         return transformData(appointmentList);
     }
 
     @Override
-    public List<AppointmentResponse> findByStatus(Long statusId) {
-        return null;
+    public List<AppointmentResponse> doctorFindByName(String nameAccount,Long accountId) {
+        List<Appointment> appointmentList = appointmentRepository.find_by_name_and_accountId(nameAccount,accountId);
+        if (appointmentList == null) return null;
+
+        return transformData(appointmentList);
+    }
+
+    @Override
+    public List<AppointmentResponse> doctorFindByDescriptions(String descriptions,Long accountId) {
+        List<Appointment> appointmentList = appointmentRepository.find_by_descriptions_and_accountId(descriptions,accountId);
+        if (appointmentList == null) return null;
+
+        return transformData(appointmentList);
+    }
+
+    @Override
+    public List<AppointmentResponse> doctorFindBySymptoms(String symptoms,Long accountId) {
+        List<Appointment> appointmentList = appointmentRepository.find_by_symptoms_and_accountId(symptoms,accountId);
+        if (appointmentList == null) return null;
+
+        return transformData(appointmentList);
     }
 
     @Override
@@ -113,7 +155,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         Appointment appointment = appointmentRepository.findByAppointmentId(id);
         if (appointment == null)
             return "Appointment is not exist !";
-        else if (appointment.getStatus().getStatusId()>3) {
+        else if (appointment.getStatus().getStatusId()==3) {
             appointment.setDescription(description);
             appointmentRepository.save(appointment);
             return "Success";
@@ -192,8 +234,22 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointmentResponse.setTime(appointment.getTime());
         appointmentResponse.setDay(TimeConfig.getTime(appointment.getDay()));
         appointmentResponse.setCreateDate(TimeConfig.getTime(appointment.getCreateDate()));
-        appointmentResponse.setDoctorResponse(doctorService.findById(appointment.getDoctor().getDoctorId()));
-        appointmentResponse.setUserResponse(userService.findById(appointment.getUser().getUserId()));
+        DoctorResponse doctorResponse = doctorService.findById(appointment.getDoctor().getDoctorId());
+        if (doctorResponse!=null)
+        {
+            appointmentResponse.setDoctorResponse(doctorResponse);
+        }
+        UserResponse userResponse = new UserResponse();
+//        try {
+//            userResponse = userService.findById(appointment.getUser().getUserId());
+//        }catch (Exception e){
+//            userResponse = null;
+//        }
+        userResponse = userService.findById(appointment.getUser().getUserId());
+        if (userResponse!=null){
+            appointmentResponse.setUserResponse(userResponse);
+        }
+
         appointmentResponse.setStatusResponse(statusService.findById(appointment.getStatus().getStatusId()));
 
         return appointmentResponse;

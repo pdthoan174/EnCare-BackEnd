@@ -11,9 +11,14 @@ public interface AppointmentService {
 
     AppointmentResponse findById(long id);
 
-    List<AppointmentResponse> findByPhone(String phone);
+    List<AppointmentResponse> doctorFindByPhone(String phone,Long accountId);
 
-    List<AppointmentResponse> findByStatus(Long statusId);
+    List<AppointmentResponse> doctorFindByName(String nameAccount,Long accountId);
+
+    List<AppointmentResponse> doctorFindByDescriptions(String descriptions,Long accountId);
+
+    List<AppointmentResponse> doctorFindBySymptoms(String symptoms,Long accountId);
+
 
     boolean newAppointment(AppointmentForm appointmentForm);
 
@@ -28,4 +33,8 @@ public interface AppointmentService {
     List<AppointmentResponse> findByHospitalId(long hospitalId);
 
     List<AppointmentResponse> findByStatusId(long statusId);
+
+    List<AppointmentResponse> doctorFindByStatus(long statusId,long accountId);
+
+    AppointmentResponse findByAppointmentIdAndAccountId(long appointmentId,long accountId);
 }
