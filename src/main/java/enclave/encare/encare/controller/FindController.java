@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/find")
+@RequestMapping("/find")
 public class FindController {
     @Autowired
     UserService userService;
@@ -77,6 +77,4 @@ public class FindController {
                 new ResponseObject(200, "Information of hospital", hospitalResponse)
         );
     }
-
-
 }

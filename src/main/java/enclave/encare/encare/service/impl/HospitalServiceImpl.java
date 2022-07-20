@@ -7,6 +7,7 @@ import enclave.encare.encare.service.HospitalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,7 +27,13 @@ public class HospitalServiceImpl implements HospitalService {
         }catch (Exception e){
             return null;
         }
+    }
 
+    @Override
+    public List<HospitalResponse> findAll() {
+        List<HospitalResponse> hospitalResponses = new ArrayList<>();
+        hospitalResponses = transformData(hospitalRepository.findAll());
+        return hospitalResponses;
     }
 
     private HospitalResponse transformData(Hospital hospital){
@@ -42,5 +49,12 @@ public class HospitalServiceImpl implements HospitalService {
         hospitalResponse.setName(hospital.getName());
 
         return hospitalResponse;
+    }
+    private List<HospitalResponse> transformData(List<Hospital> hospitalList){
+        List<HospitalResponse> hospitalResponses = new ArrayList<>();
+        for (Hospital hospital: hospitalList) {
+            hospitalResponses.add(transformData(hospital));
+        }
+        return hospitalResponses;
     }
 }

@@ -1,7 +1,6 @@
 package enclave.encare.encare.controller;
 
 import enclave.encare.encare.config.RegexConfig;
-import enclave.encare.encare.config.TimeConfig;
 import enclave.encare.encare.form.*;
 import enclave.encare.encare.jwt.JwtTokenProvider;
 import enclave.encare.encare.model.Account;
@@ -11,6 +10,11 @@ import enclave.encare.encare.modelResponse.CategoryResponse;
 import enclave.encare.encare.modelResponse.LoginResponse;
 import enclave.encare.encare.modelResponse.RegisterResponse;
 import enclave.encare.encare.service.*;
+import enclave.encare.encare.model.User;
+import enclave.encare.encare.service.CategoryService;
+import enclave.encare.encare.service.DoctorService;
+import enclave.encare.encare.service.HospitalService;
+import enclave.encare.encare.service.UserService;
 import enclave.encare.encare.until.CustomUserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -189,6 +193,7 @@ public class HomeController {
         );
     }
 
+//<<<<<<< HEAD
 
     @PostMapping("/listFreeTime")
     public ResponseEntity<ResponseObject> listFreeTimeOfDoctor(@Valid @RequestBody FreeTimeForm freeTimeForm){
@@ -231,4 +236,13 @@ public class HomeController {
         }
         return 0;
     }
+//=======
+    @GetMapping("/listDoctor/categoryId={categoryId}/page={page}")
+    public ResponseEntity<ResponseObject> listDoctorOfCategoryId(@PathVariable("categoryId") long categoryId, @PathVariable("page") int page){
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(200, "List Category", doctorService.listDoctorOfCategory(categoryId, page))
+        );
+    }
+
+//>>>>>>> doctor
 }

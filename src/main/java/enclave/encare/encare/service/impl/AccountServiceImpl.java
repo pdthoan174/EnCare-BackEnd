@@ -29,7 +29,7 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String phone) throws UsernameNotFoundException {
         Account account = accountRepository.findAccountByPhone(phone);
-        if (account==null){
+        if (account == null) {
             throw new UsernameNotFoundException(phone);
         }
         return new CustomUserDetail(account);
@@ -61,7 +61,7 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
 
     @Override
     public long registerDoctor(RegisterFormDoctor registerFormDoctor) {
-        if (findByPhone(registerFormDoctor.getPhone())){
+        if (findByPhone(registerFormDoctor.getPhone())) {
             Account account = new Account();
 
             account.setPhone("+84"+Long.parseLong(registerFormDoctor.getPhone().trim()));
@@ -183,7 +183,7 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
         return BCrypt.checkpw(oldPass, account.getPassword());
     }
 
-    private AccountResponse transformData(Account account){
+    private AccountResponse transformData(Account account) {
         AccountResponse accountResponse = new AccountResponse();
 
         accountResponse.setAccountId(account.getAccountId());
