@@ -1,8 +1,8 @@
 cloud:
   aws:
     credentials:
-      access-key: AKIAXXTFF2PMREK7FGTT
-      secret-key: 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
+      access-key: AKIASRKRB2OB7HWIEADE
+      secret-key: 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
     region:
       static: ap-southeast-1
     stack:
@@ -12,7 +12,7 @@ cloud:
 
 application:
   bucket:
-    name: encare
+    name: nts-encare
   security:
     secret-key: encare
 
@@ -26,5 +26,5 @@ spring:
 
 twilio:
   account_sid: AC914bef40cbbb437f8bee775b4109ec6e
-  auth_token: 7cc837a82b830f536332f464aba68427
+  auth_token: 01dca4f846000f90027c5835f99ce804
   trial_phone: +16815324305

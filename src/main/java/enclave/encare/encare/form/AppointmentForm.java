@@ -24,10 +24,8 @@ public class AppointmentForm {
     @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "dd/MM/yyyy")
-//=======
-    private long userId;
-//>>>>>>> doctor
     private String day;
+    private long userId;
     private String description;
     private String symptomps;
 }
