@@ -71,16 +71,10 @@ public class UserServiceImpl implements UserService {
         return false;
     }
 
-    @Override
-<<<<<<< HEAD
-    public List<UserResponse> findAll() {
-        return transformData(userRepository.findAll());
-=======
     public void uploadAvatar(ImageForm imageForm) {
         Account account = accountRepository.findByAccountId(imageForm.getAccountId());
         account.setAvatar(storageService.uploadFile(imageForm.getFile()));
         accountRepository.save(account);
->>>>>>> 82c86b93a95a2cef2ce9f9ddbacedceaaf7d22cc
     }
 
     private UserResponse transformData(User user){

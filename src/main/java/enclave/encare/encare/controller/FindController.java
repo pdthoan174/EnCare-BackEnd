@@ -29,26 +29,6 @@ public class FindController {
     @Autowired
     HospitalService hospitalService;
 
-<<<<<<< HEAD
-    @GetMapping("/doctors")
-    public ResponseEntity<ResponseObject> informationDoctor(){
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200,"Information of doctor", doctorService.listDoctor())
-        );
-    }
-
-    @GetMapping("/doctorId={doctorId}")
-    public ResponseEntity<ResponseObject> informationDoctors(@PathVariable("doctorId") long doctorId){
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200,"Information of doctor", doctorService.findById(doctorId))
-        );
-    }
-
-    @GetMapping("/hospitals")
-    public ResponseEntity<ResponseObject> informationHospitals(){
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200,"Information of hospital", hospitalService.findAll())
-=======
     @GetMapping("/doctor/{doctorId}")
     public ResponseEntity<ResponseObject> informationDoctor(@PathVariable("doctorId") long doctorId){
         DoctorResponse doctorResponse = doctorService.findById(doctorId);
@@ -59,7 +39,6 @@ public class FindController {
         }
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(200,"Information of doctor", doctorResponse)
->>>>>>> 82c86b93a95a2cef2ce9f9ddbacedceaaf7d22cc
         );
     }
 

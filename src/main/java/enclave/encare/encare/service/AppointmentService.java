@@ -41,12 +41,9 @@ public interface AppointmentService {
     List<AppointmentResponse> findByHospitalId(long hospitalId);
 
     List<AppointmentResponse> findByStatusId(long statusId);
-<<<<<<< HEAD
 
     List<AppointmentResponse> doctorFindByStatus(long statusId,long accountId);
 
     AppointmentResponse findByAppointmentIdAndAccountId(long appointmentId,long accountId);
-=======
-//>>>>>>> doctor
->>>>>>> 82c86b93a95a2cef2ce9f9ddbacedceaaf7d22cc
+
 }

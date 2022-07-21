@@ -31,7 +31,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> findByDoctorDoctorId(long doctorId);
     List<Appointment> findByDoctor_Hospital_HospitalId(long hospitalId);
     List<Appointment> findByStatusStatusId(long statusId);
-<<<<<<< HEAD
+//<<<<<<< HEAD
     @Query("SELECT ap from Appointment ap WHERE ap.user.account.phone like %?1% and ap.doctor.account.accountId= ?2")
     List<Appointment> find_by_phone_and_accountId(String phone,Long accountId);
     @Query("SELECT ap from Appointment ap WHERE ap.user.account.name like %?1% and ap.doctor.account.accountId= ?2 ")
@@ -42,9 +42,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Appointment> find_by_symptoms_and_accountId(String symptoms,Long accountId);
     List<Appointment> findByStatusStatusIdAndAndDoctor_Account_AccountIdOrderByCreateDate(Long statusId,Long accountId);
     Appointment findByAppointmentIdAndAndDoctor_Account_AccountIdOrderByCreateDate(Long appointmentId,Long accountId);
-=======
+//=======
     @Query("SELECT ap from Appointment ap WHERE ap.user.account.phone like %?1% ")
     List<Appointment> findByUser_Account_PhoneContains(String phone);
-//>>>>>>> doctor
->>>>>>> 82c86b93a95a2cef2ce9f9ddbacedceaaf7d22cc
 }

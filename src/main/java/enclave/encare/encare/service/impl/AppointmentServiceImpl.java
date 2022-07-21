@@ -14,13 +14,9 @@ import enclave.encare.encare.model.Appointment;
 import enclave.encare.encare.model.Doctor;
 import enclave.encare.encare.model.Status;
 import enclave.encare.encare.model.User;
-<<<<<<< HEAD
 import enclave.encare.encare.modelResponse.AppointmentResponse;
 import enclave.encare.encare.modelResponse.DoctorResponse;
 import enclave.encare.encare.modelResponse.UserResponse;
-=======
-//>>>>>>> doctor
->>>>>>> 82c86b93a95a2cef2ce9f9ddbacedceaaf7d22cc
 import enclave.encare.encare.repository.AppointmentRepository;
 import enclave.encare.encare.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +49,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Autowired
     StatusService statusService;
 
-<<<<<<< HEAD
+//<<<<<<< HEAD
 
     @Override
     public List<AppointmentResponse> findAll() {
@@ -65,8 +61,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         return appointmentResponseList;
     }
 
-=======
->>>>>>> 82c86b93a95a2cef2ce9f9ddbacedceaaf7d22cc
     @Override
     public List<AppointmentResponse> findByHospitalId(long hospitalId) {
         List<AppointmentResponse> appointmentResponseList = new ArrayList<>();
@@ -203,17 +197,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setStatus(status);
         appointmentRepository.save(appointment);
         return true;
-    }
-
-    @Override
-    public List<AppointmentResponse> findAll() {
-        List<Appointment> appointmentList = appointmentRepository.findAll();
-        List<AppointmentResponse> appointmentResponseList = new ArrayList<AppointmentResponse>();
-        for (Appointment appointment:appointmentList){
-            AppointmentResponse appointmentResponse = transformData(appointment);
-            appointmentResponseList.add(appointmentResponse);
-        }
-        return appointmentResponseList;
     }
 
     public boolean findTimeAndDay(long doctorId, int time, Date date){

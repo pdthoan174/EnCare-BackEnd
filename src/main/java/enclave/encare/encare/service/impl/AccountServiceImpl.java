@@ -185,11 +185,6 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
         return BCrypt.checkpw(oldPass, account.getPassword());
     }
 
-    @Override
-    public List<AccountResponse> findAll() {
-        return transformData(accountRepository.findAll());
-    }
-
     private AccountResponse transformData(Account account) {
         AccountResponse accountResponse = new AccountResponse();
 
@@ -199,21 +194,11 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
         accountResponse.setName(account.getName());
         accountResponse.setAvatar(account.getAvatar());
         accountResponse.setDescription(account.getDescription());
-<<<<<<< HEAD
-        Date date = account.getBirthday();
-        if (date!=null)
-            accountResponse.setBirthday(TimeConfig.getTime(date));
-        String createDate = TimeConfig.getTime(account.getCreateDate());
-        if (createDate!=null || createDate.length()>0){
-            accountResponse.setCreateDate(createDate);
-        }
 
-=======
         if (account.getBirthday()!=null){
             accountResponse.setBirthday(TimeConfig.getTime(account.getBirthday()));
         }
         accountResponse.setCreateDate(TimeConfig.getTime(account.getCreateDate()));
->>>>>>> 82c86b93a95a2cef2ce9f9ddbacedceaaf7d22cc
 
         return accountResponse;
     }

@@ -53,9 +53,9 @@ public class HomeController {
     HospitalService hospitalService;
 
     @Autowired
-<<<<<<< HEAD
     StatusService statusService;
-=======
+
+    @Autowired
     AppointmentService appointmentService;
 
     @Autowired
@@ -63,7 +63,6 @@ public class HomeController {
 
     @Autowired
     SmsService smsService;
->>>>>>> 82c86b93a95a2cef2ce9f9ddbacedceaaf7d22cc
 
     @PostMapping("/login")
     public ResponseEntity<ResponseObject> login(@Valid @RequestBody LoginForm loginForm){
@@ -175,11 +174,19 @@ public class HomeController {
         );
     }
 
-<<<<<<< HEAD
-
-    @GetMapping("/listDoctor/categoryId={categoryId}")
-    public ResponseEntity<ResponseObject> listDoctorOfCategoryId(@PathVariable("categoryId") long categoryId){
-=======
+//    @GetMapping("/listDoctor/categoryId={categoryId}")
+//    public ResponseEntity<ResponseObject> listDoctorOfCategoryId(@PathVariable("categoryId") long categoryId){
+//        CategoryResponse categoryResponse = categoryService.findById(categoryId);
+//        if (categoryResponse == null){
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+//                    new ResponseObject(400, "This category does not exist", "")
+//            );
+//        }
+//        return ResponseEntity.status(HttpStatus.OK).body(
+//                new ResponseObject(200, "This category does not exist", "")
+//        );
+//    }
+//
     @GetMapping("/listDoctor")
     public ResponseEntity<ResponseObject> listDoctorOfCategoryIdAndRating(
             @RequestParam(required = true, name = "categoryId") long categoryId,
@@ -194,13 +201,10 @@ public class HomeController {
                     new ResponseObject(400, "This category does not exist", "")
             );
         }
->>>>>>> 82c86b93a95a2cef2ce9f9ddbacedceaaf7d22cc
         return ResponseEntity.status(HttpStatus.OK).body(
                 new ResponseObject(200, "List Category", doctorService.listDoctorOfCategoryRating(categoryId, page, rating, lon, lat))
         );
     }
-
-//<<<<<<< HEAD
 
     @PostMapping("/listFreeTime")
     public ResponseEntity<ResponseObject> listFreeTimeOfDoctor(@Valid @RequestBody FreeTimeForm freeTimeForm){

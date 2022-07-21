@@ -74,7 +74,6 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-<<<<<<< HEAD
     public DoctorResponse findByAccountId(long id) {
         Doctor doctor = doctorRepository.findByAccount_AccountId(id);
         if (doctor == null)
@@ -82,7 +81,7 @@ public class DoctorServiceImpl implements DoctorService {
         return transformData(doctor);
     }
 
-=======
+//=======
     public long findDoctorIdByAccountId(long accountId) {
         return doctorRepository.findDoctorByAccountId(accountId).getDoctorId();
     }
@@ -95,7 +94,7 @@ public class DoctorServiceImpl implements DoctorService {
 //        return transformData(doctor);
 //    }
 
->>>>>>> 82c86b93a95a2cef2ce9f9ddbacedceaaf7d22cc
+//>>>>>>> 82c86b93a95a2cef2ce9f9ddbacedceaaf7d22cc
     @Override
     public List<DoctorResponse> findByName(String name) {
         List<Doctor> doctorList = doctorRepository.findByAccount_Name(name);
