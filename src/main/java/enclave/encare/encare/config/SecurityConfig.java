@@ -16,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
+//@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     AccountServiceImpl accountService;
@@ -39,9 +39,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable();
 
-        http.authorizeRequests()
-                .antMatchers("/api/user/login","/","/api/user/registerUser","/api/user/registerDoctor","/ws","/api/user/check")
-                .permitAll();
+//        http.authorizeRequests()
+//                .antMatchers("/api/user/login","/","/api/user/registerUser","/api/user/registerDoctor","/ws","/api/user/check")
+//                .permitAll();
 
         http.authorizeRequests().antMatchers("/api/doctor/**").hasAuthority("DOCTOR");
         http.authorizeRequests().antMatchers("/api/patient/**").hasAuthority("PATIENT");
