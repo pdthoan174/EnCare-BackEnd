@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.List;
@@ -27,4 +28,5 @@ public class Status {
     public Status(long statusId){
         this.statusId = statusId;
     }
+    public Status(String name, String description){this.name = name; this.description = description;}
 }

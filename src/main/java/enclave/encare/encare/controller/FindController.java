@@ -1,6 +1,5 @@
 package enclave.encare.encare.controller;
 
-import enclave.encare.encare.model.Hospital;
 import enclave.encare.encare.model.ResponseObject;
 import enclave.encare.encare.modelResponse.DoctorResponse;
 import enclave.encare.encare.modelResponse.HospitalResponse;

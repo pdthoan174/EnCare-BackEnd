@@ -11,4 +11,6 @@ public interface CategoryService {
     CategoryResponse findById(long id);
     List<CategoryResponse> listCategory();
     Category listDoctorOfCategory(long category);
+    void saveAll(List<Category> categoryList);
+    void delete();
 }

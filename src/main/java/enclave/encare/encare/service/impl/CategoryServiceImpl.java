@@ -47,6 +47,18 @@ public class CategoryServiceImpl implements CategoryService {
         return null;
     }
 
+    @Override
+    public void saveAll(List<Category> categoryList) {
+        categoryRepository.saveAll(categoryList);
+    }
+
+    @Override
+    public void delete() {
+        for (long i = 1; i<=23; i++){
+            categoryRepository.deleteById(i);
+        }
+    }
+
     private CategoryResponse transformData(Category category){
         CategoryResponse categoryResponse = new CategoryResponse();
 

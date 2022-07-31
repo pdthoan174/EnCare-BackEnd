@@ -36,6 +36,11 @@ public class HospitalServiceImpl implements HospitalService {
         return hospitalResponses;
     }
 
+    @Override
+    public void saveAll(List<Hospital> hospitalList) {
+        hospitalRepository.saveAll(hospitalList);
+    }
+
     private HospitalResponse transformData(Hospital hospital){
         HospitalResponse hospitalResponse = new HospitalResponse();
 

@@ -3,14 +3,11 @@ package enclave.encare.encare.controller;
 import enclave.encare.encare.config.RegexConfig;
 import enclave.encare.encare.form.*;
 import enclave.encare.encare.jwt.JwtTokenProvider;
-import enclave.encare.encare.model.Account;
-import enclave.encare.encare.model.ResponseObject;
+import enclave.encare.encare.model.*;
 import enclave.encare.encare.modelResponse.AppointmentResponse;
 import enclave.encare.encare.modelResponse.CategoryResponse;
 import enclave.encare.encare.modelResponse.LoginResponse;
 import enclave.encare.encare.modelResponse.RegisterResponse;
-import enclave.encare.encare.service.*;
-import enclave.encare.encare.model.User;
 import enclave.encare.encare.service.*;
 import enclave.encare.encare.until.CustomUserDetail;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -174,19 +173,6 @@ public class HomeController {
         );
     }
 
-//    @GetMapping("/listDoctor/categoryId={categoryId}")
-//    public ResponseEntity<ResponseObject> listDoctorOfCategoryId(@PathVariable("categoryId") long categoryId){
-//        CategoryResponse categoryResponse = categoryService.findById(categoryId);
-//        if (categoryResponse == null){
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-//                    new ResponseObject(400, "This category does not exist", "")
-//            );
-//        }
-//        return ResponseEntity.status(HttpStatus.OK).body(
-//                new ResponseObject(200, "This category does not exist", "")
-//        );
-//    }
-//
     @GetMapping("/listDoctor")
     public ResponseEntity<ResponseObject> listDoctorOfCategoryIdAndRating(
             @RequestParam(required = true, name = "categoryId") long categoryId,
@@ -232,12 +218,45 @@ public class HomeController {
         );
     }
 
-    @GetMapping("/check")
-    public ResponseEntity<ResponseObject> check(){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new ResponseObject(400, "Find fail", appointmentService.findAll())
-        );
-    }
+//    @GetMapping("/check")
+//    public ResponseEntity<ResponseObject> check(){
+////        List<Category> categoryList = new ArrayList<Category>();
+////        categoryList.add(new Category("Neuroscience", "Obtain effective methods of treatment and rehabilitation in the department of neurosurgery and general neurology."));
+////        categoryList.add(new Category("Orthopaedic Surgery & Sports Medicine",
+////                "Restore mobility thanks to our team of experienced chiropractors (bone and muscle)."));
+////        categoryList.add(new Category("Oncology Department",
+////                "Get diagnoses and treatments from our qualified specialists in various areas of oncology."));
+////        categoryList.add(new Category("Pediatrics",
+////                "Bring your child the best medical treatment with our highly qualified pediatricians."));
+////        categoryList.add(new Category("Department of Otolaryngology",
+////                "Consult with specialists with an excellent track record of treating ENT diseases."));
+////        categoryList.add(new Category("Ophthalmology",
+////                "Get the right eye treatment using accurate surgical devices and make an effective diagnosis."));
+////        categoryService.saveAll(categoryList);
+////
+////        List<Status> statusList = new ArrayList<Status>();
+////        statusList.add(new Status("Wait for confirmation", ""));
+////        statusList.add(new Status("Confirmed", ""));
+////        statusList.add(new Status("Checked", ""));
+////        statusList.add(new Status("Cancelled", ""));
+////        statusService.saveAll(statusList);
+////
+////        List<Hospital> hospitalList = new ArrayList<Hospital>();
+////        hospitalList.add(new Hospital(
+////                "Da Nang General Hospital",
+////                0,
+////                0,
+////                0,
+////                0,
+////                "Da Nang",
+////                "Da Nang General Hospital"
+////        ));
+////        hospitalService.saveAll(hospitalList);
+////        categoryService.delete();
+//        return ResponseEntity.status(HttpStatus.OK).body(
+//                new ResponseObject(200, "Find fail", "")
+//        );
+//    }
 
     private long getAccountId(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -247,13 +266,4 @@ public class HomeController {
         }
         return 0;
     }
-//=======
-    @GetMapping("/listDoctor/categoryId={categoryId}/page={page}")
-    public ResponseEntity<ResponseObject> listDoctorOfCategoryId(@PathVariable("categoryId") long categoryId, @PathVariable("page") int page){
-        return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200, "List Category", doctorService.listDoctorOfCategory(categoryId, page))
-        );
-    }
-
-//>>>>>>> doctor
 }

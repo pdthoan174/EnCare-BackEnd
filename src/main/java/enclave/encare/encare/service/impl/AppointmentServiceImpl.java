@@ -17,6 +17,7 @@ import enclave.encare.encare.model.User;
 import enclave.encare.encare.modelResponse.AppointmentResponse;
 import enclave.encare.encare.modelResponse.DoctorResponse;
 import enclave.encare.encare.modelResponse.UserResponse;
+import enclave.encare.encare.repository.AccountRepository;
 import enclave.encare.encare.repository.AppointmentRepository;
 import enclave.encare.encare.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Autowired
     AppointmentRepository appointmentRepository;
+
+    @Autowired
+    AccountRepository accountRepository;
 
     @Autowired
     DoctorService doctorService;
@@ -93,6 +97,20 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         if (appointment==null) return null;
         return transformData(appointment);
+    }
+
+    @Override
+    public List<AppointmentResponse> listAppointment(long accountUserId, int statusValue, int page) {
+        User user = new User(accountRepository.findByAccountId(accountUserId).getUser().getUserId());
+        Status status = new Status(statusValue);
+        Pageable pageable = PageRequest.of(page, 6);
+        List<Appointment> appointmentList = appointmentRepository.findByUserAndStatus(user, status, pageable);
+        List<AppointmentResponse> appointmentResponseList = new ArrayList<AppointmentResponse>();
+        for (Appointment appointment:appointmentList) {
+            AppointmentResponse appointmentResponse = transformData(appointment);
+            appointmentResponseList.add(appointmentResponse);
+        }
+        return appointmentResponseList;
     }
 
     @Override
@@ -181,7 +199,6 @@ public class AppointmentServiceImpl implements AppointmentService {
                 list.add(i);
             }
         }
-
         return list;
     }
 
@@ -200,18 +217,12 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     public boolean findTimeAndDay(long doctorId, int time, Date date){
-//        Appointment appointment = appointmentRepository.findByTimeAndDay(time, date);
         Doctor doctor = new Doctor(doctorId);
         List<Appointment> appointment = appointmentRepository.findByDoctorAndTimeAndDayEquals(doctor, time, date);
         if (appointment.size() > 0){
             return false;
         }
         return true;
-//=======
-//        Appointment appointment = appointmentRepository.findByAppointmentId(id);
-//        if (appointment == null) return null;
-//
-//        return transformData(appointment);
     }
 
     @Override

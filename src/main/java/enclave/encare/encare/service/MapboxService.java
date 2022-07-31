@@ -24,7 +24,7 @@ public class MapboxService {
         RestTemplate restTemplate = new RestTemplate();
         MapboxResponse object = restTemplate.getForObject(url, MapboxResponse.class);
         float time = object.getRoutes().get(0).getDuration()/60f;//minute
-        float km = object.getRoutes().get(0).getDistance()/1000f;
+        float km = object.getRoutes().get(0).getDistance()/1000f;//km
         distance.setDuration(NumberConfig.round(time));
         distance.setDistance(NumberConfig.round(km));
 

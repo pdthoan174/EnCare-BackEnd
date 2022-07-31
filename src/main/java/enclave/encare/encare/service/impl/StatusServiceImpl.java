@@ -36,6 +36,11 @@ public class StatusServiceImpl implements StatusService {
         return statusResponses;
     }
 
+    @Override
+    public void saveAll(List<Status> statusList) {
+        statusRepository.saveAll(statusList);
+    }
+
     private StatusResponse transformData(Status status){
         StatusResponse statusResponse = new StatusResponse();
 
