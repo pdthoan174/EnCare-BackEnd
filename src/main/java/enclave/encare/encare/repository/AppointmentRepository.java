@@ -4,6 +4,7 @@ import enclave.encare.encare.form.AppointmentForm;
 import enclave.encare.encare.model.Appointment;
 import enclave.encare.encare.model.Doctor;
 //<<<<<<< HEAD
+import enclave.encare.encare.model.Status;
 import enclave.encare.encare.model.User;
 import org.springframework.data.domain.Pageable;
 //=======
@@ -45,4 +46,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 //=======
     @Query("SELECT ap from Appointment ap WHERE ap.user.account.phone like %?1% ")
     List<Appointment> findByUser_Account_PhoneContains(String phone);
+
+    List<Appointment> findByUserAndStatus(User user, Status status, Pageable pageable);
 }

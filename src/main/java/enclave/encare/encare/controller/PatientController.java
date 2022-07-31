@@ -117,7 +117,7 @@ public class PatientController {
     }
 
     @PostMapping("/newPassword")
-    public ResponseEntity<ResponseObject> newPassowrd(@Valid @RequestBody NewPasswordForm newPasswordForm){
+    public ResponseEntity<ResponseObject> newPassword(@Valid @RequestBody NewPasswordForm newPasswordForm){
         newPasswordForm.setAccountId(getAccountId());
         if(accountService.updatePassword(newPasswordForm)){
             return ResponseEntity.status(HttpStatus.OK).body(
@@ -136,9 +136,24 @@ public class PatientController {
         );
     }
 
+    @GetMapping("/listAppointment")
+    public ResponseEntity<ResponseObject> listAppointment(@RequestParam(name = "status") int status,
+                                                          @RequestParam(name = "page", required = false, defaultValue = "0") int page) {
+        if ((status < 1) || (status > 4)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400, "Fail", "This value does not exist")
+            );
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(
+                new ResponseObject(200, "List Appointment of user", appointmentService.listAppointment(
+                        getAccountId(), status, page
+                ))
+        );
+    }
+
     private long getAccountId(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication!=null){
+        if (authentication != null) {
             String token = jwtTokenProvider.generateToken((CustomUserDetail) authentication.getPrincipal());
             return jwtTokenProvider.getUserId(token);
         }

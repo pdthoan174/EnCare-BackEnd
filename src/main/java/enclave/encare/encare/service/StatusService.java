@@ -8,4 +8,5 @@ import java.util.List;
 public interface StatusService {
     StatusResponse findById(long id);
     List<StatusResponse> findAll();
+    void saveAll(List<Status> statusList);
 }

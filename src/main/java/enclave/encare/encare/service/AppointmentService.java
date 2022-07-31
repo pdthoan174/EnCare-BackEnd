@@ -46,4 +46,6 @@ public interface AppointmentService {
 
     AppointmentResponse findByAppointmentIdAndAccountId(long appointmentId,long accountId);
 
+    List<AppointmentResponse> listAppointment(long userId, int status, int page);
+
 }
