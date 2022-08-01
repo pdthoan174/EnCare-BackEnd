@@ -1,6 +1,7 @@
 package enclave.encare.encare.controller;
 
 import enclave.encare.encare.config.RegexConfig;
+import enclave.encare.encare.config.TimeConfig;
 import enclave.encare.encare.form.*;
 import enclave.encare.encare.jwt.JwtTokenProvider;
 import enclave.encare.encare.model.ResponseObject;
@@ -14,6 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.xml.crypto.Data;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/api/patient")
@@ -50,6 +53,13 @@ public class PatientController {
         if (!appointmentForm.getDay().matches(RegexConfig.day)){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     new ResponseObject(400, "Day is not correct format", "")
+            );
+        }
+        Date chooseTime = TimeConfig.getDate(appointmentForm.getDay());
+        Date now = new Date();
+        if (chooseTime.before(now)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new ResponseObject(400, "You choosed time in the past", "")
             );
         }
 
