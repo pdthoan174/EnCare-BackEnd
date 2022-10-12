@@ -229,7 +229,7 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public List<DoctorResponse> listDoctor(int page) {
-        Pageable pageable = PageRequest.of(page, 6);
+        Pageable pageable = PageRequest.of(page, 12);
         List<Doctor> doctorList = doctorRepository.findAllByAccountExistsOrderByDoctorIdDesc(pageable);
         if (doctorList == null) return null;
         List<DoctorResponse> doctorResponseList = transformData(doctorList);

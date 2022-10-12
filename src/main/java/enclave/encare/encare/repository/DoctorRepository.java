@@ -34,8 +34,9 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
 
     @Query("SELECT d from Doctor d WHERE d.account.name like %?1% ")
     List<Doctor> findByAccount_Name(String name);
-
+//  phân trang
     List<Doctor> findAllByAccountExistsOrderByDoctorIdDesc(Pageable pageable);
+   
 
     List<Doctor> findDoctorByHospitalOrderByRatingDesc(Hospital hospital);
 
