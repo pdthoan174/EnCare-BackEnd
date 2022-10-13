@@ -85,7 +85,7 @@ public class HomeController {
         LoginResponse loginResponse = new LoginResponse(account.getAccountId(), account.getRole(), account.getPassword(), token);
 
         return ResponseEntity.status(HttpStatus.OK).body(
-                new ResponseObject(200,"login success", loginResponse)
+                new ResponseObject(200,"Login success", loginResponse)
         );
     }
 
@@ -188,6 +188,7 @@ public class HomeController {
             );
         }
         return ResponseEntity.status(HttpStatus.OK).body(
+//                new ResponseObject(200, "List Category", doctorService.listDoctor())
                 new ResponseObject(200, "List Category", doctorService.listDoctorOfCategoryRating(categoryId, page, rating, lon, lat))
         );
     }
@@ -217,6 +218,7 @@ public class HomeController {
                 new ResponseObject(400, "Find fail", "Don't have appointment id")
         );
     }
+
 
 //    @GetMapping("/check")
 //    public ResponseEntity<ResponseObject> check(){

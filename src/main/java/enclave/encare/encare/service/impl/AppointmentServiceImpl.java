@@ -178,7 +178,8 @@ public class AppointmentServiceImpl implements AppointmentService {
         for (int i = 7; i<=11; i++){
             check = true;
             for (int j=0; j<appointmentList.size(); j++){
-                if (i == appointmentList.get(j).getTime()){
+                // show freetime when time null anh time done or cancel
+                if (i == appointmentList.get(j).getTime() && (appointmentList.get(j).getStatus().getStatusId() != 4 || appointmentList.get(j).getStatus().getStatusId() != 1)){
                     check = false;
                     break;
                 }
@@ -190,7 +191,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         for (int i = 13; i<=16; i++){
             check = true;
             for (int j=0; j<appointmentList.size(); j++){
-                if (i == appointmentList.get(j).getTime()){
+                if (i == appointmentList.get(j).getTime()  && (appointmentList.get(j).getStatus().getStatusId() != 4 || appointmentList.get(j).getStatus().getStatusId() != 1)){
                     check = false;
                     break;
                 }

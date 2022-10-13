@@ -187,7 +187,7 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public List<DoctorResponse> listDoctorOfCategoryRating(long categoryId, int page, float rating, double lon, double lat) {
-        Pageable pageable = PageRequest.of(page, 6);
+        Pageable pageable = PageRequest.of(page, 20);
         List<Doctor> doctorList = doctorRepository.findDoctorByCategoryAndRatingDesc(categoryId, rating, pageable);
         List<DoctorResponse> doctorResponseList = new ArrayList<DoctorResponse>();
         if (lon != 0 && lat != 0) {
@@ -229,7 +229,7 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public List<DoctorResponse> listDoctor(int page) {
-        Pageable pageable = PageRequest.of(page, 12);
+        Pageable pageable = PageRequest.of(page, 6);
         List<Doctor> doctorList = doctorRepository.findAllByAccountExistsOrderByDoctorIdDesc(pageable);
         if (doctorList == null) return null;
         List<DoctorResponse> doctorResponseList = transformData(doctorList);

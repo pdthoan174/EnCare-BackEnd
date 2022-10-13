@@ -31,6 +31,8 @@ public interface DoctorService {
 
     List<DoctorResponse> listDoctor();
 
+//    List<DoctorResponse> listDoctor(int category);
+
     List<DoctorResponse> listDoctor(int page);
 
     List<DoctorResponse> listDoctorOfHospital(long hospitalId);
